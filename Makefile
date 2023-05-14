@@ -11,11 +11,10 @@ topic-create:
 topic-check:
 	docker exec kafka kafka-topics --bootstrap-server kafka:9092 --describe topic1
 	docker exec kafka kafka-topics --bootstrap-server kafka:9092 --describe topic2
-
 topic-consumer:
-	docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic topic1
+	docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --from-beginning --topic topic1
 topic-lag:
-	docker exec kafka kafka-run-class kafka.admin.ConsumerGroupCommand --group group_2 --bootstrap-server kafka:9092 --describe
+	docker exec kafka kafka-consumer-groups --bootstrap-server localhost:9092 --describe --all-groups
 
 # Prepare lab
 create: up topic-create topic-check

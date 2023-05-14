@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -67,9 +66,17 @@ func main() {
 		// Generate a random message key and value
 		key := strconv.Itoa(rand.Intn(100))
 
-		var value Foo
-		gofakeit.Struct(&value)
-		valueByte, err := json.Marshal(value)
+		jo := gofakeit.JSONOptions{
+			Type:     "object",
+			RowCount: 10,
+			Fields: []gofakeit.Field{
+				{Name: "date", Function: "daterange", Params: gofakeit.MapParams{"format": {"2006-01-02"}}},
+				{Name: "message", Function: "sentence", Params: gofakeit.MapParams{}},
+			},
+			Indent: false,
+		}
+
+		value, err := gofakeit.JSON(&jo)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -77,7 +84,7 @@ func main() {
 		// Create a Kafka message with the formatted key and value
 		kafkaMsg := kafka.Message{
 			Key:   []byte(key),
-			Value: []byte(valueByte),
+			Value: []byte(value),
 		}
 
 		// Send the Kafka message
