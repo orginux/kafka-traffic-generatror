@@ -70,7 +70,9 @@ func main() {
 			Type:     "object",
 			RowCount: 10,
 			Fields: []gofakeit.Field{
-				{Name: "date", Function: "daterange", Params: gofakeit.MapParams{"format": {"2006-01-02"}}},
+				{Name: "date", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}}},
+				{Name: "date2", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "start": {"2021-01-16"}, "end": {"2022-05-05"}}},
+				{Name: "date3", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "daterange": {"2021-01-16,2022-05-05"}}},
 				{Name: "message", Function: "sentence", Params: gofakeit.MapParams{}},
 			},
 			Indent: false,
