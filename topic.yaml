@@ -1,0 +1,4 @@
+---
+name: topic1
+num_msgs: 1000
+msg_delay: 1
