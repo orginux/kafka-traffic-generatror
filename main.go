@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -13,29 +12,6 @@ import (
 	"github.com/segmentio/kafka-go"
 	"gopkg.in/yaml.v2"
 )
-
-// Message defines the structure of a Kafka message format
-type Message struct {
-	Key   string `yaml:"key"`
-	Value Foo    `yaml:"value"`
-}
-
-type Foo struct {
-	Str           string
-	Int           int
-	Pointer       *int
-	Name          string         `fake:"{firstname}"`  // Any available function all lowercase
-	Sentence      string         `fake:"{sentence:3}"` // Can call with parameters
-	RandStr       string         `fake:"{randomstring:[hello,world]}"`
-	Number        string         `fake:"{number:1,10}"`       // Comma separated for multiple values
-	Regex         string         `fake:"{regex:[abcdef]{5}}"` // Generate string from regex
-	Map           map[string]int `fakesize:"2"`
-	Array         []string       `fakesize:"2"`
-	ArrayRange    []string       `fakesize:"2,6"`
-	Skip          *string        `fake:"skip"` // Set to "skip" to not generate data for
-	Created       time.Time      // Can take in a fake tag as well as a format tag
-	CreatedFormat time.Time      `fake:"{year}-{month}-{day}" format:"2006-01-02"`
-}
 
 // Topic defines the structure of a Kafka topic
 type Topic struct {
@@ -70,9 +46,16 @@ func main() {
 			Type:     "object",
 			RowCount: 10,
 			Fields: []gofakeit.Field{
+				// without opitons
 				{Name: "date", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}}},
-				{Name: "date2", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "start": {"2021-01-16"}, "end": {"2022-05-05"}}},
-				{Name: "date3", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "daterange": {"2021-01-16,2022-05-05"}}},
+				// start and end
+				{Name: "date2", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "start": {"2021-05-13"}, "end": {"2022-05-16"}}},
+				{Name: "date3", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "start": {"2021-05-13 21:39:38"}, "end": {"2023-05-16 21:39:38"}}},
+				// daterange
+				{Name: "date4", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "daterange": {"2023-05-13 21:39:38,2023-05-16 21:39:38"}}},
+				{Name: "date5", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "daterange": {"2021-03-13,2022-05-06"}}},
+
+				// message
 				{Name: "message", Function: "sentence", Params: gofakeit.MapParams{}},
 			},
 			Indent: false,
@@ -94,7 +77,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("error sending Kafka message: %v", err)
 		}
-		fmt.Println("sent message")
+		log.Println("sent message")
 
 		// Delay before sending the next message
 		time.Sleep(time.Duration(topic.MsgDelay) * time.Millisecond)
