@@ -1,4 +1,24 @@
 ---
-name: topic1
-num_msgs: 1000
-msg_delay: 1
+topic:
+  name: topic1
+  num_msgs: 1000
+  msg_delay: 1
+fields:
+  - name: "Date"
+    function: daterange
+    params:
+      format: "yyyy-MM-dd"
+      startdate: "2023-03-13"
+      enddate:  "2023-05-16"
+  - name: "Email"
+    function: email
+    params: {}
+  - name: "City"
+    function: city
+    params: {}
+  - name: "Gender"
+    function: gender
+    params: {}
+  - name: "Message"
+    function: sentence
+    params: {}
