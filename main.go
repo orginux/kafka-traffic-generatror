@@ -46,17 +46,14 @@ func main() {
 			Type:     "object",
 			RowCount: 10,
 			Fields: []gofakeit.Field{
-				// without opitons
-				{Name: "date", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}}},
-				// start and end
-				{Name: "date2", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "start": {"2021-05-13"}, "end": {"2022-05-16"}}},
-				{Name: "date3", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "start": {"2021-05-13 21:39:38"}, "end": {"2023-05-16 21:39:38"}}},
-				// daterange
-				{Name: "date4", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "daterange": {"2023-05-13 21:39:38,2023-05-16 21:39:38"}}},
-				{Name: "date5", Function: "daterange", Params: gofakeit.MapParams{"format": {"yyyy-MM-dd"}, "daterange": {"2021-03-13,2022-05-06"}}},
-
-				// message
-				{Name: "message", Function: "sentence", Params: gofakeit.MapParams{}},
+				{Name: "date", Function: "daterange", Params: gofakeit.MapParams{
+					"format":    {"yyyy-MM-dd"},
+					"startdate": {"2023-03-13"},
+					"enddate":   {"2023-05-16"}}},
+				{Name: "Email", Function: "email", Params: gofakeit.MapParams{}},
+				{Name: "City", Function: "city", Params: gofakeit.MapParams{}},
+				{Name: "Gender", Function: "gender", Params: gofakeit.MapParams{}},
+				{Name: "Message", Function: "sentence", Params: gofakeit.MapParams{}},
 			},
 			Indent: false,
 		}
