@@ -26,7 +26,12 @@ type Field struct {
 	Params   map[string]string `yaml:"params"`
 }
 
+type Kafka struct {
+	Host string `yaml:"host"`
+}
+
 type Config struct {
+	Kafka  Kafka   `yaml:"kafka"`
 	Topic  Topic   `yaml:"topic"`
 	Fields []Field `yaml:"fields"`
 }
@@ -45,7 +50,7 @@ func main() {
 
 	// Create a Kafka writer
 	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers: []string{"localhost:9092"},
+		Brokers: []string{config.Kafka.Host},
 		Topic:   config.Topic.Name,
 	})
 

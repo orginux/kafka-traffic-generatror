@@ -1,7 +1,9 @@
 ---
+kafka:
+  host: "localhost:9092"
 topic:
   name: topic1
-  num_msgs: 1000
+  num_msgs: 3
   msg_delay: 1
 fields:
   - name: "Date"
