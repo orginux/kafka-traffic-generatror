@@ -7,9 +7,9 @@ fields:
   - name: "Date"
     function: daterange
     params:
-      format: "yyyy-MM-dd"
-      startdate: "2023-03-13"
-      enddate:  "2023-05-16"
+      format: "yyyy-MM-dd HH:mm:ss"
+      startdate: "1993-03-13 15:11:02"
+      enddate:  "1993-05-16 15:11:02"
   - name: "Email"
     function: email
     params: {}
