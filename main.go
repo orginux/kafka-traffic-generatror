@@ -54,6 +54,7 @@ func main() {
 		Topic:   config.Topic.Name,
 	})
 
+	// Genereate message parampetrs
 	var fields []gofakeit.Field
 	for _, fild := range config.Fields {
 		params := gofakeit.NewMapParams()
@@ -93,6 +94,8 @@ func main() {
 			Value: []byte(value),
 		}
 
+		conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
+
 		// Send the Kafka message
 		err = writer.WriteMessages(context.Background(), kafkaMsg)
 		if err != nil {
@@ -105,8 +108,7 @@ func main() {
 	}
 
 	// Close the Kafka writer
-	err = writer.Close()
-	if err != nil {
-		log.Fatalf("error closing Kafka writer: %v", err)
+	if err := writer.Close(); err != nil {
+		log.Fatal("failed to close writer:", err)
 	}
 }
