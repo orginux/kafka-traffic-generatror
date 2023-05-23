@@ -102,13 +102,13 @@ func main() {
 		// Send the Kafka message
 		err = conn.WriteMessages(context.Background(), batch...)
 		if err != nil {
-			log.Fatal("failed to write messages:", err)
+			log.Fatalf("failed to write messages: %v\n", err)
 		}
 		log.Printf("sent batch of %d messages\n", config.Topic.NumMsgs)
 
 		// Close the Kafka connection
 		if err := conn.Close(); err != nil {
-			log.Fatal("failed to close Kafak connection:", err)
+			log.Fatalf("failed to close the Kafka connection: %v\n", err)
 		}
 
 		// Delay before sending the next message
