@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/segmentio/kafka-go"
@@ -17,7 +18,7 @@ type Topic struct {
 	Name     string `yaml:"name"`
 	NumMsgs  int    `yaml:"batch_msgs"`
 	NumBatch int    `yaml:"batch_count"`
-	MsgDelay int    `yaml:"batch_delay"`
+	MsgDelay int    `yaml:"batch_delay_ms"`
 }
 
 type Field struct {
@@ -65,49 +66,53 @@ func main() {
 		})
 	}
 
-	// Generate a batch of messages
-	var batch []kafka.Message
-	for i := 0; i < config.Topic.NumMsgs; i++ {
-		// Generate a random message key and value
-		key := strconv.Itoa(rand.Intn(100))
+	for i := 0; i < config.Topic.NumBatch; i++ {
+		// Generate a batch of messages
+		var batch []kafka.Message
+		for j := 0; j < config.Topic.NumMsgs; j++ {
+			// Generate a random message key and value
+			key := strconv.Itoa(rand.Intn(100))
 
-		jo := gofakeit.JSONOptions{
-			Type:   "object", // array or object
-			Fields: fields,   // internal_exampleFields
-			Indent: false,    // indent
+			jo := gofakeit.JSONOptions{
+				Type:   "object", // array or object
+				Fields: fields,   // internal_exampleFields
+				Indent: false,    // indent
+			}
+
+			value, err := gofakeit.JSON(&jo)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			// Create a Kafka message with the formatted key and value
+			kafkaMsg := kafka.Message{
+				Key:   []byte(key),
+				Value: []byte(value),
+			}
+			batch = append(batch, kafkaMsg)
+
 		}
 
-		value, err := gofakeit.JSON(&jo)
+		// Create a Kafka connection
+		conn := kafka.NewWriter(kafka.WriterConfig{
+			Brokers: []string{config.Kafka.Host},
+			Topic:   config.Topic.Name,
+		})
+
+		// Send the Kafka message
+		err = conn.WriteMessages(context.Background(), batch...)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatal("failed to write messages:", err)
 		}
+		log.Printf("sent batch of %d messages\n", config.Topic.NumMsgs)
 
-		// Create a Kafka message with the formatted key and value
-		kafkaMsg := kafka.Message{
-			Key:   []byte(key),
-			Value: []byte(value),
+		// Close the Kafka connection
+		if err := conn.Close(); err != nil {
+			log.Fatal("failed to close Kafak connection:", err)
 		}
-		batch = append(batch, kafkaMsg)
 
 		// Delay before sending the next message
-		// time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
-	}
-
-	// Create a Kafka conn
-	conn := kafka.NewWriter(kafka.WriterConfig{
-		Brokers: []string{config.Kafka.Host},
-		Topic:   config.Topic.Name,
-	})
-
-	// Send the Kafka message
-	err = conn.WriteMessages(context.Background(), batch...)
-	if err != nil {
-		log.Fatal("failed to write messages:", err)
-	}
-	log.Println("sent batch")
-
-	// Close the Kafka connection
-	if err := conn.Close(); err != nil {
-		log.Fatal("failed to close Kafak connection:", err)
+		log.Printf("delay %d ms before the next batch\n", config.Topic.MsgDelay)
+		time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
 	}
 }
