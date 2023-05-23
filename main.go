@@ -41,12 +41,12 @@ func main() {
 	// Load the topic description from a YAML file
 	yamlFile, err := ioutil.ReadFile("topic.yaml")
 	if err != nil {
-		log.Fatalf("error reading YAML file: %v", err)
+		log.Fatalf("error reading YAML file: %v\n", err)
 	}
 
 	config := Config{}
 	if err := yaml.Unmarshal(yamlFile, &config); err != nil {
-		log.Fatalf("error parsing YAML file: %v", err)
+		log.Fatalf("error parsing YAML file: %v\n", err)
 	}
 
 	// Genereate message parampetrs
