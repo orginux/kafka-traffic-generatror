@@ -94,8 +94,6 @@ func main() {
 			Value: []byte(value),
 		}
 
-		conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
-
 		// Send the Kafka message
 		err = writer.WriteMessages(context.Background(), kafkaMsg)
 		if err != nil {

@@ -15,4 +15,4 @@ topic-lag:
 	docker exec kafka kafka-consumer-groups --bootstrap-server localhost:9092 --describe --all-groups
 
 # Prepare lab
-create: up topic-create topic-check
+create: down up topic-create topic-check
