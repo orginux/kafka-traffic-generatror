@@ -15,8 +15,9 @@ import (
 // Topic defines the structure of a Kafka topic
 type Topic struct {
 	Name     string `yaml:"name"`
-	NumMsgs  int    `yaml:"num_msgs"`
-	MsgDelay int    `yaml:"msg_delay"`
+	NumMsgs  int    `yaml:"batch_msgs"`
+	NumBatch int    `yaml:"batch_count"`
+	MsgDelay int    `yaml:"batch_delay"`
 }
 
 type Field struct {
@@ -71,10 +72,9 @@ func main() {
 		key := strconv.Itoa(rand.Intn(100))
 
 		jo := gofakeit.JSONOptions{
-			Type:     "object",
-			RowCount: 10,
-			Fields:   fields,
-			Indent:   false,
+			Type:   "object", // array or object
+			Fields: fields,   // internal_exampleFields
+			Indent: false,    // indent
 		}
 
 		value, err := gofakeit.JSON(&jo)
