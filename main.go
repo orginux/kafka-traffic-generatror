@@ -6,7 +6,6 @@ import (
 	"log"
 	"math/rand"
 	"strconv"
-	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/segmentio/kafka-go"
@@ -48,12 +47,6 @@ func main() {
 		log.Fatalf("error parsing YAML file: %v", err)
 	}
 
-	// Create a Kafka writer
-	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers: []string{config.Kafka.Host},
-		Topic:   config.Topic.Name,
-	})
-
 	// Genereate message parampetrs
 	var fields []gofakeit.Field
 	for _, fild := range config.Fields {
@@ -71,7 +64,8 @@ func main() {
 		})
 	}
 
-	// Generate and send messages to Kafka
+	// Generate a batch of messages
+	var batch []kafka.Message
 	for i := 0; i < config.Topic.NumMsgs; i++ {
 		// Generate a random message key and value
 		key := strconv.Itoa(rand.Intn(100))
@@ -93,20 +87,27 @@ func main() {
 			Key:   []byte(key),
 			Value: []byte(value),
 		}
-
-		// Send the Kafka message
-		err = writer.WriteMessages(context.Background(), kafkaMsg)
-		if err != nil {
-			log.Fatalf("error sending Kafka message: %v", err)
-		}
-		log.Println("sent message")
+		batch = append(batch, kafkaMsg)
 
 		// Delay before sending the next message
-		time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
+		// time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
 	}
 
-	// Close the Kafka writer
-	if err := writer.Close(); err != nil {
-		log.Fatal("failed to close writer:", err)
+	// Create a Kafka conn
+	conn := kafka.NewWriter(kafka.WriterConfig{
+		Brokers: []string{config.Kafka.Host},
+		Topic:   config.Topic.Name,
+	})
+
+	// Send the Kafka message
+	err = conn.WriteMessages(context.Background(), batch...)
+	if err != nil {
+		log.Fatal("failed to write messages:", err)
+	}
+	log.Println("sent batch")
+
+	// Close the Kafka connection
+	if err := conn.Close(); err != nil {
+		log.Fatal("failed to close Kafak connection:", err)
 	}
 }
