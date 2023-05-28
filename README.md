@@ -4,7 +4,7 @@ This Go program generates and sends batches of messages to a Kafka topic using r
 
 # Usage
 1. Build:
-``bash
+```bash
 make build
 ```
 
