@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -39,80 +40,108 @@ type Config struct {
 
 func main() {
 	// Load the topic description from a YAML file
-	yamlFile, err := ioutil.ReadFile("topic.yaml")
+	config, err := loadConfig("topic.yaml")
 	if err != nil {
-		log.Fatalf("error reading YAML file: %v\n", err)
+		log.Fatalln(err)
 	}
 
-	config := Config{}
-	if err := yaml.Unmarshal(yamlFile, &config); err != nil {
-		log.Fatalf("error parsing YAML file: %v\n", err)
-	}
+	// Generate message parameters
+	fields := generateFields(config.Fields)
 
-	// Genereate message parampetrs
-	var fields []gofakeit.Field
-	for _, fild := range config.Fields {
-		params := gofakeit.NewMapParams()
-		if len(fild.Params) > 0 {
-			for key, value := range fild.Params {
-				log.Println(key, value)
-				params.Add(key, value)
-			}
-		}
-		fields = append(fields, gofakeit.Field{
-			Name:     fild.Name,
-			Function: fild.Function,
-			Params:   *params,
-		})
-	}
-
+	// Generate and send batches of messages
 	for i := 0; i < config.Topic.NumBatch; i++ {
-		// Generate a batch of messages
-		var batch []kafka.Message
-		for j := 0; j < config.Topic.NumMsgs; j++ {
-			// Generate a random message key and value
-			key := strconv.Itoa(rand.Intn(100))
-
-			jo := gofakeit.JSONOptions{
-				Type:   "object", // array or object
-				Fields: fields,   // internal_exampleFields
-				Indent: false,    // indent
-			}
-
-			value, err := gofakeit.JSON(&jo)
-			if err != nil {
-				log.Fatalln(err)
-			}
-
-			// Create a Kafka message with the formatted key and value
-			kafkaMsg := kafka.Message{
-				Key:   []byte(key),
-				Value: []byte(value),
-			}
-			batch = append(batch, kafkaMsg)
-
-		}
-
-		// Create a Kafka connection
-		conn := kafka.NewWriter(kafka.WriterConfig{
-			Brokers: []string{config.Kafka.Host},
-			Topic:   config.Topic.Name,
-		})
-
-		// Send the Kafka message
-		err = conn.WriteMessages(context.Background(), batch...)
+		batch, err := generateBatch(config.Topic.NumMsgs, fields)
 		if err != nil {
-			log.Fatalf("failed to write messages: %v\n", err)
-		}
-		log.Printf("sent batch of %d messages\n", config.Topic.NumMsgs)
-
-		// Close the Kafka connection
-		if err := conn.Close(); err != nil {
-			log.Fatalf("failed to close the Kafka connection: %v\n", err)
+			log.Fatalln(err)
 		}
 
-		// Delay before sending the next message
-		log.Printf("delay %d ms before the next batch\n", config.Topic.MsgDelay)
+		if err := sendBatch(config.Kafka.Host, config.Topic.Name, batch); err != nil {
+			log.Fatalln(err)
+		}
+
+		// Delay before sending the next batch
+		log.Printf("Delaying %d ms before the next batch\n", config.Topic.MsgDelay)
 		time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
+	}
+}
+
+// loadConfig loads the configuration from a YAML file.
+func loadConfig(filename string) (Config, error) {
+	yamlFile, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return Config{}, fmt.Errorf("Error reading YAML file: %v\n", err)
+	}
+
+	var config Config
+	if err := yaml.Unmarshal(yamlFile, &config); err != nil {
+		return Config{}, fmt.Errorf("Error parsing YAML file: %v\n", err)
+	}
+
+	return config, nil
+}
+
+// generateBatch generates a batch of Kafka messages with random key-value pairs.
+func generateFields(fieldConfigs []Field) []gofakeit.Field {
+	var fields []gofakeit.Field
+	for _, fieldConfig := range fieldConfigs {
+		params := gofakeit.NewMapParams()
+		for key, value := range fieldConfig.Params {
+			params.Add(key, value)
+		}
+
+		field := gofakeit.Field{
+			Name:     fieldConfig.Name,
+			Function: fieldConfig.Function,
+			Params:   *params,
+		}
+
+		fields = append(fields, field)
+	}
+
+	return fields
+}
+
+// sendBatch sends a batch of Kafka messages to the specified topic.
+func generateBatch(numMsgs int, fields []gofakeit.Field) ([]kafka.Message, error) {
+	var batch []kafka.Message
+	for i := 0; i < numMsgs; i++ {
+		// TODO make it optional
+		key := strconv.Itoa(rand.Intn(100))
+
+		// Generate the random fake data
+		jo := gofakeit.JSONOptions{
+			Type:   "object",
+			Fields: fields,
+			Indent: false,
+		}
+		value, err := gofakeit.JSON(&jo)
+		if err != nil {
+			return nil, fmt.Errorf("Error of generate random data: %v\n", err)
+		}
+
+		// Prepare a Kafka message with the random data
+		msg := kafka.Message{
+			Key:   []byte(key),
+			Value: []byte(value),
+		}
+		batch = append(batch, msg)
+	}
+	return batch, nil
+}
+
+func sendBatch(host, topic string, batch []kafka.Message) error {
+	conn := kafka.NewWriter(kafka.WriterConfig{
+		Brokers: []string{host},
+		Topic:   topic,
+	})
+
+	err := conn.WriteMessages(context.Background(), batch...)
+	if err != nil {
+		return fmt.Errorf("Failed to write messages: %v\n", err)
+	}
+	log.Printf("Sent batch of %d messages\n", len(batch))
+
+	if err := conn.Close(); err != nil {
+		return fmt.Errorf("Failed to close the Kafka connection: %v\n", err)
 	}
 }
