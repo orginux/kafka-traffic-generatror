@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -38,9 +39,17 @@ type Config struct {
 	Fields []Field `yaml:"fields"`
 }
 
+var configFile string
+
+func init() {
+	flag.StringVar(&configFile, "config", "", "config file path")
+
+	flag.Parse()
+}
+
 func main() {
 	// Load the topic description from a YAML file
-	config, err := loadConfig("topic.yaml")
+	config, err := loadConfig(configFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -144,4 +153,6 @@ func sendBatch(host, topic string, batch []kafka.Message) error {
 	if err := conn.Close(); err != nil {
 		return fmt.Errorf("Failed to close the Kafka connection: %v\n", err)
 	}
+
+	return nil
 }

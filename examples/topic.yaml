@@ -3,9 +3,9 @@ kafka:
   host: "localhost:9092"
 topic:
   name: topic1
-  batch_msgs: 3
-  batch_count: 5
-  batch_delay_ms: 10000
+  batch_msgs: 5
+  batch_count: 3
+  batch_delay_ms: 2000
     # ?? batch_in_parallel: 1
 fields:
   - name: "Date"
