@@ -1,10 +1,10 @@
 ---
 kafka:
-  host: "localhost:9092"
+  host: "kafka:29092"
 topic:
   name: topic1
   batch_msgs: 5
-  batch_count: 3
+  batch_count: 300
   batch_delay_ms: 2000
 fields:
   - name: "Date"

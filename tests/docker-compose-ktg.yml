@@ -1,0 +1,20 @@
+---
+version: '3.7'
+
+services:
+  ktg:
+    image: orginux/kafka-traffic-generator
+    container_name: ktg
+    networks:
+      - kafka-network
+    volumes:
+      - type: bind
+        source: ./configs/
+        target: /etc/ktg/
+        read_only:  true
+    command: --config /etc/ktg/test_1.yaml
+
+networks:
+  kafka-network:
+    name: tests_kafka-network
+    external: true
