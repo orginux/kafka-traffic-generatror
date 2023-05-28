@@ -1,6 +1,8 @@
 build:
 	go build -o ./bin/kafka-traffic-generator
 
+build-image:
+	docker build -t orginux/kafka-traffic-generator . 
 
 # Tests
 test-up: test-down test-start-kafka topic-create topic-check
