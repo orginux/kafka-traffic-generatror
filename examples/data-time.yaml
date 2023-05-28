@@ -1,0 +1,24 @@
+---
+kafka:
+  host: "localhost:9092"
+topic:
+  name: topic1
+  batch_msgs: 3
+  batch_count: 10
+  batch_delay_ms: 1000
+fields:
+# https://github.com/brianvoe/gofakeit#datetime
+  - name: Date
+    function: date
+  - name: DateRange
+    function: daterange
+    params:
+      format: "yyyy-MM-dd HH:mm:ss"
+      startdate: "2025-01-01 00:00:00"
+      enddate:  "2025-12-31 00:00:00"
+  - name: Year
+    function: year
+  - name: Month
+    function: month
+  - name: Day
+    function: day
