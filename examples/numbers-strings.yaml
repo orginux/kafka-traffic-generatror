@@ -1,0 +1,30 @@
+---
+kafka:
+  host: "localhost:9092"
+topic:
+  name: topic1
+  batch_msgs: 3
+  batch_count: 10
+  batch_delay_ms: 1000
+fields:
+# https://github.com/brianvoe/gofakeit#number
+  - name: Int8
+    function: int8
+  - name: uint32
+    function: uint32
+  - name: Float32Range
+    function: float32range
+    params:
+      min: 1.0
+      max: 2.0
+  - name: HexUint128
+    function: hexuint128
+# https://github.com/brianvoe/gofakeit#string
+  - name: Digit
+    function: digit
+  - name: DigitN
+    function: digitn
+    params:
+      count: 2
+  - name: Letter
+    function: letter

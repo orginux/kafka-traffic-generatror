@@ -34,10 +34,11 @@ fields:
       <PARAMETER_2>: <VALUE_2>
       ...
 ```
+All functions are listed in [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
 
 3. Run the program with the path to the configuration file:
 
 ```bash
-./bin/kafka-traffic-generator --config examples/topic.yaml
+./bin/kafka-traffic-generator --config examples/simple.yaml
 ```
 The program will load the configuration, generate the specified number of messages with random data, and send them to the Kafka topic.

@@ -1,0 +1,30 @@
+---
+kafka:
+  host: "localhost:9092"
+topic:
+  name: topic1
+  batch_msgs: 10
+  batch_count: 5
+  batch_delay_ms: 2000
+fields:
+# https://github.com/brianvoe/gofakeit#person
+  - name: FirstName
+    function: firstname
+  - name: LastName
+    function: lastname
+  - name: Email
+    function: email
+  - name: Phone
+    function: phone
+# https://github.com/brianvoe/gofakeit#address
+  - name: Country
+    function: country
+  - name: City
+    function: city
+  - name: StreetName
+    function: streetname
+  - name: Zip
+    function: zip
+# https://github.com/brianvoe/gofakeit#language
+  - name: Language
+    function: language

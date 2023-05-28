@@ -6,7 +6,6 @@ topic:
   batch_msgs: 5
   batch_count: 3
   batch_delay_ms: 2000
-    # ?? batch_in_parallel: 1
 fields:
   - name: "Date"
     function: daterange
@@ -16,12 +15,6 @@ fields:
       enddate:  "1993-05-16 15:11:02"
   - name: "Email"
     function: email
-    params: {}
-  - name: "City"
-    function: city
-    params: {}
-  - name: "Gender"
-    function: gender
     params: {}
   - name: "Message"
     function: sentence
