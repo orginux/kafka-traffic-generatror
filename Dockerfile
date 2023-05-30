@@ -1,4 +1,4 @@
-FROM golang:1.20 AS build-stage
+FROM golang:1.20.4-bullseye AS build-stage
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
