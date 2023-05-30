@@ -93,6 +93,9 @@ jobs:
       - build-docker
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Show images
         run: docker images
 
