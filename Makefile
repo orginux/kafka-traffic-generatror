@@ -9,9 +9,13 @@ test-up: test-down test-start-kafka topic-create topic-check
 
 test-down:
 	docker compose --file tests/docker-compose.yml down
+	docker compose --file tests/docker-compose-ktg.yml down
 
 test-start-kafka:
-	docker compose --file tests/docker-compose.yml up -d
+	docker compose --file tests/docker-compose.yml up --remove-orphans -d
+
+test: test-up
+	docker compose --file tests/docker-compose-ktg.yml up --exit-code-from ktg
 
 # Kafka
 topic-create:
