@@ -96,5 +96,8 @@ jobs:
       - name: Show images
         run: docker images
 
+      - name: Show images
+        run: ls
+
       - name: Integration tests
         run: make test
