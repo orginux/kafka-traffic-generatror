@@ -3,7 +3,7 @@ version: '3.7'
 
 services:
   ktg:
-    image: orginux/kafka-traffic-generator
+    image: orginux/kafka-traffic-generator:latest
     container_name: ktg
     networks:
       - kafka-network
