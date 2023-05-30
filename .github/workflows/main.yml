@@ -88,5 +88,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  integration-tests:
+    needs:
+      - build-docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show images
+        run: docker images
+
       - name: Integration tests
         run: make test
