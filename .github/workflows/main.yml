@@ -122,5 +122,4 @@ jobs:
       - name: Integration tests
         run: |
           make test
-          make topic-consumer
           make test-down
