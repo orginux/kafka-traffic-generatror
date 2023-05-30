@@ -79,14 +79,20 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}},value=${{ env.IMAGE_TAG }}
 
-      - name: Build and push Docker image
+      - name: Build and export
         uses: docker/build-push-action@v4
         with:
           context: .
-            # push: ${{ github.event_name != 'pull_request' }}
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=docker,dest=/tmp/ktg-latest.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ktg-image
+          path: /tmp/ktg-latest.tar
 
   integration-tests:
     needs:
@@ -96,11 +102,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Show images
-        run: docker images
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Show images
-        run: ls
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: myimage
+          path: /tmp
+
+      - name: Load image
+        run: |
+          docker load --input /tmp/ktg-latest.tar
+          docker image ls -a
 
       - name: Integration tests
         run: make test
