@@ -123,3 +123,4 @@ jobs:
         run: |
           make test
           make topic-consumer
+          make test-down
