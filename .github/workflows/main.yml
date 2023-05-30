@@ -111,7 +111,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: myimage
+          name: ktg-image
           path: /tmp
 
       - name: Load image
