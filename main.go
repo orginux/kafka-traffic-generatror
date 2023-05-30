@@ -4,9 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
+	"os"
 	"strconv"
 	"time"
 
@@ -76,7 +76,7 @@ func main() {
 
 // loadConfig loads the configuration from a YAML file.
 func loadConfig(filename string) (Config, error) {
-	yamlFile, err := ioutil.ReadFile(filename)
+	yamlFile, err := os.ReadFile(filename)
 	if err != nil {
 		return Config{}, fmt.Errorf("Error reading YAML file: %v\n", err)
 	}
