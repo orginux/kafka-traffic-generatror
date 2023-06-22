@@ -2,10 +2,10 @@ build:
 	go build -o ./bin/kafka-traffic-generator
 
 build-image:
-	docker build -t orginux/kafka-traffic-generator .
+	docker build -t ghcr.io/orginux/kafka-traffic-generatror:latest .
 
 # Tests
-test-up: test-down test-start-kafka topic-create topic-check
+test-up: test-down test-start-kafka test-topic-create test-topic-check
 
 test-down:
 	docker compose --file tests/docker-compose.yml down
@@ -16,6 +16,9 @@ test-start-kafka:
 
 test: test-up
 	docker compose --file tests/docker-compose-ktg.yml up --exit-code-from ktg
+
+test-local: build-image test
+
 
 ## Kafka
 test-topic-create:
