@@ -78,6 +78,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          pull: true
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -120,6 +121,7 @@ jobs:
     needs:
       - integration-tests
     runs-on: ubuntu-latest
+    permissions: write-all
       # if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
