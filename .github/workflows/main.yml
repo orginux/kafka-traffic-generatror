@@ -150,4 +150,5 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
