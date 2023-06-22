@@ -2,7 +2,7 @@ build:
 	go build -o ./bin/kafka-traffic-generator
 
 build-image:
-	docker build -t orginux/kafka-traffic-generator . 
+	docker build -t orginux/kafka-traffic-generator .
 
 # Tests
 test-up: test-down test-start-kafka topic-create topic-check
@@ -17,12 +17,16 @@ test-start-kafka:
 test: test-up
 	docker compose --file tests/docker-compose-ktg.yml up --exit-code-from ktg
 
-# Kafka
-topic-create:
+## Kafka
+test-topic-create:
 	docker exec kafka kafka-topics --bootstrap-server kafka:9092 --topic topic1 --create --partitions 6 --replication-factor 1
-topic-check:
+test-topic-check:
 	docker exec kafka kafka-topics --bootstrap-server kafka:9092 --describe topic1
-topic-consumer:
+test-topic-consumer:
 	docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --from-beginning --topic topic1
-topic-lag:
+test-topic-lag:
 	docker exec kafka kafka-consumer-groups --bootstrap-server localhost:9092 --describe --all-groups
+
+## Generate messages
+test-generate: build
+	./bin/kafka-traffic-generator --config examples/data-time.yaml
