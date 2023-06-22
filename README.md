@@ -4,6 +4,7 @@ This Go program generates and sends batches of messages to a Kafka topic using r
 Messages are generated in <key><json> format, you can define fields in a config file.
 
 # Usage
+## Binary file
 1. Build:
 ```bash
 make build
@@ -43,6 +44,30 @@ All functions are listed in [the gofakeit project](https://github.com/brianvoe/g
 ./bin/kafka-traffic-generator --config examples/simple.yaml
 ```
 The program will load the configuration, generate the specified number of messages with random data, and send them to the Kafka topic.
+
+## Docker Image
+A Docker image is available for easy deployment of the Kafka Traffic Generator.
+To use the Docker image, you can pull it by running the following command:
+```bash
+docker pull ghcr.io/orginux/kafka-traffic-generator:latest
+```
+
+Once you have the image, you can run the Kafka Traffic Generator using Docker Compose.
+Here's an example configuration for running the tool:
+```yaml
+services:
+  ktg:
+    image: ghcr.io/orginux/kafka-traffic-generator:latest
+    container_name: ktg
+    networks:
+      - kafka-network
+    volumes:
+      - type: bind
+        source: ./configs/
+        target: /etc/ktg/
+        read_only: true
+    command: --config /etc/ktg/test_1.yaml
+```
 
 # Dependencies
 This project uses the following Go libraries:
