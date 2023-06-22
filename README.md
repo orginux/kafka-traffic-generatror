@@ -1,6 +1,7 @@
 # Kafka Traffic Generator
 
 This Go program generates and sends batches of messages to a Kafka topic using randomly generated data.
+Messages are generated in <key><json> format, you can define fields in a config file.
 
 # Usage
 1. Build:
@@ -42,3 +43,8 @@ All functions are listed in [the gofakeit project](https://github.com/brianvoe/g
 ./bin/kafka-traffic-generator --config examples/simple.yaml
 ```
 The program will load the configuration, generate the specified number of messages with random data, and send them to the Kafka topic.
+
+# Dependencies
+This project uses the following Go libraries:
+- [brianvoe/gofakeit](https://github.com/brianvoe/gofakeit): A powerful Go library for generating fake data.
+- [segmentio/kafka-go](https://github.com/segmentio/kafka-go): A pure Go Kafka client library for interacting with Apache Kafka.
