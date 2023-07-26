@@ -58,7 +58,8 @@ func main() {
 	fields := generateFields(config.Fields)
 
 	// Generate and send batches of messages
-	for i := 0; i < config.Topic.NumBatch; i++ {
+	var batchNum int
+	for batchNum <= config.Topic.NumBatch {
 		batch, err := generateBatch(config.Topic.NumMsgs, fields)
 		if err != nil {
 			log.Fatalln(err)
@@ -71,6 +72,10 @@ func main() {
 		// Delay before sending the next batch
 		log.Printf("Delaying %d ms before the next batch\n", config.Topic.MsgDelay)
 		time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
+
+		if config.Topic.NumBatch > 0 {
+			batchNum++
+		}
 	}
 }
 
