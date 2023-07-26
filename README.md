@@ -17,9 +17,9 @@ kafka:
 
 topic:
   name: <TOPIC_NAME>
-  batch_msgs: <NUMBER_OF_MESSAGES_PER_BATCH>
-  batch_count: <NUMBER_OF_BATCHES>
-  batch_delay_ms: <DELAY_BETWEEN_BATCHES_IN_MILLISECONDS>
+  batch_msgs: Positive integer
+  batch_count: Positive integer -- 0 — Unlimited number of batches
+  batch_delay_ms: Positive integer
 
 fields:
   - name: <FIELD_NAME_1>
