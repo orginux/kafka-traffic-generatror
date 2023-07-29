@@ -144,10 +144,10 @@ func generateBatch(numMsgs int, fields []gofakeit.Field) ([]kafka.Message, error
 }
 
 func sendBatch(host, topic string, batch []kafka.Message) error {
-	conn := kafka.NewWriter(kafka.WriterConfig{
-		Brokers: []string{host},
-		Topic:   topic,
-	})
+	conn := kafka.Writer{
+		Addr:  kafka.TCP(host),
+		Topic: topic,
+	}
 
 	err := conn.WriteMessages(context.Background(), batch...)
 	if err != nil {
