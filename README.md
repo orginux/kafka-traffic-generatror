@@ -1,6 +1,6 @@
 # Kafka Traffic Generator
 
-This Go program generates and sends batches of messages to a Kafka topic using randomly generated data.
+This tool generates and sends batches of messages to a Kafka topic using randomly generated data.
 Messages are generated in `<key:int><valuse:json>` format, you can define fields in a config file.
 
 # Usage
