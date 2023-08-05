@@ -6,50 +6,23 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/segmentio/kafka-go"
-	"gopkg.in/yaml.v2"
+
+	"github.com/orginux/kafka-traffic-generator/internal/config"
 )
-
-// Topic defines the structure of a Kafka topic
-type Topic struct {
-	Name     string `yaml:"name"`
-	NumMsgs  int    `yaml:"batch_msgs"`
-	NumBatch int    `yaml:"batch_count"`
-	MsgDelay int    `yaml:"batch_delay_ms"`
-}
-
-type Field struct {
-	Name     string            `yaml:"name"`
-	Function string            `yaml:"function"`
-	Params   map[string]string `yaml:"params"`
-}
-
-type Kafka struct {
-	Host string `yaml:"host"`
-}
-
-type Config struct {
-	Kafka  Kafka   `yaml:"kafka"`
-	Topic  Topic   `yaml:"topic"`
-	Fields []Field `yaml:"fields"`
-}
-
-var configFile string
 
 func init() {
 	flag.StringVar(&configFile, "config", "", "config file path")
-
 	flag.Parse()
 }
 
 func main() {
 	// Load the topic description from a YAML file
-	config, err := loadConfig(configFile)
+	config, err := config.Load(configFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -77,21 +50,6 @@ func main() {
 			batchNum++
 		}
 	}
-}
-
-// loadConfig loads the configuration from a YAML file.
-func loadConfig(filename string) (Config, error) {
-	yamlFile, err := os.ReadFile(filename)
-	if err != nil {
-		return Config{}, fmt.Errorf("Error reading YAML file: %v\n", err)
-	}
-
-	var config Config
-	if err := yaml.Unmarshal(yamlFile, &config); err != nil {
-		return Config{}, fmt.Errorf("Error parsing YAML file: %v\n", err)
-	}
-
-	return config, nil
 }
 
 // generateBatch generates a batch of Kafka messages with random key-value pairs.
