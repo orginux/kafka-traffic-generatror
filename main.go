@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/orginux/kafka-traffic-generator/internal/config"
-	"github.com/orginux/kafka-traffic-generator/internal/generator"
+	"kafka-traffic-generator/internal/config"
+	"kafka-traffic-generator/internal/generator"
 )
 
 var (

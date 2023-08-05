@@ -11,7 +11,7 @@ import (
 	"github.com/brianvoe/gofakeit"
 	"github.com/segmentio/kafka-go"
 
-	"github.com/orginux/kafka-traffic-generator/internal/config"
+	"kafka-traffic-generator/internal/config"
 )
 
 func Run(config config.Config) {
