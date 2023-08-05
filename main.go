@@ -24,5 +24,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	generator.Run(config)
+	if err = generator.Run(config); err != nil {
+		log.Fatalln(err)
+	}
 }

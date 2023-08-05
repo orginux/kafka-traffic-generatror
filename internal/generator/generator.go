@@ -14,7 +14,7 @@ import (
 	"kafka-traffic-generator/internal/config"
 )
 
-func Run(config config.Config) {
+func Run(config config.Config) error {
 	// Generate message parameters
 	fields := generateFields(config.Fields)
 
@@ -23,11 +23,11 @@ func Run(config config.Config) {
 	for batchNum <= config.Topic.NumBatch {
 		batch, err := generateBatch(config.Topic.NumMsgs, fields)
 		if err != nil {
-			log.Fatalln(err)
+			return err
 		}
 
 		if err := sendBatch(config.Kafka.Host, config.Topic.Name, batch); err != nil {
-			log.Fatalln(err)
+			return err
 		}
 
 		// Delay before sending the next batch
@@ -38,6 +38,7 @@ func Run(config config.Config) {
 			batchNum++
 		}
 	}
+	return nil
 }
 
 // generateBatch generates a batch of Kafka messages with random key-value pairs.
