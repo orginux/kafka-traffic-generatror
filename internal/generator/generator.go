@@ -1,3 +1,4 @@
+// Package generator provides functionalities to generate and send synthetic Kafka traffic.
 package generator
 
 import (
@@ -14,6 +15,7 @@ import (
 	"kafka-traffic-generator/internal/config"
 )
 
+// Run generates and sends batches of Kafka messages based onthe provided configuration.
 func Run(config config.Config) error {
 	// Generate message parameters
 	fields := generateFields(config.Fields)
@@ -41,7 +43,7 @@ func Run(config config.Config) error {
 	return nil
 }
 
-// generateBatch generates a batch of Kafka messages with random key-value pairs.
+// generateFields generates a slice of gofakeit.Field based on the provided field configurations.
 func generateFields(fieldConfigs []config.Field) []gofakeit.Field {
 	var fields []gofakeit.Field
 	for _, fieldConfig := range fieldConfigs {
@@ -62,7 +64,7 @@ func generateFields(fieldConfigs []config.Field) []gofakeit.Field {
 	return fields
 }
 
-// sendBatch sends a batch of Kafka messages to the specified topic.
+// generateBatch generates a batch of Kafka messages with random key-value pairs.
 func generateBatch(numMsgs int, fields []gofakeit.Field) ([]kafka.Message, error) {
 	var batch []kafka.Message
 	for i := 0; i < numMsgs; i++ {
@@ -77,7 +79,7 @@ func generateBatch(numMsgs int, fields []gofakeit.Field) ([]kafka.Message, error
 		}
 		value, err := gofakeit.JSON(&jo)
 		if err != nil {
-			return nil, fmt.Errorf("Error of generate random data: %v\n", err)
+			return nil, fmt.Errorf("Error generating random data: %v\n", err)
 		}
 
 		// Prepare a Kafka message with the random data
@@ -90,6 +92,7 @@ func generateBatch(numMsgs int, fields []gofakeit.Field) ([]kafka.Message, error
 	return batch, nil
 }
 
+// sendBatch sends a batch of Kafka messages to the specified topic.
 func sendBatch(host, topic string, batch []kafka.Message) error {
 	conn := kafka.Writer{
 		Addr:  kafka.TCP(host),

@@ -12,6 +12,7 @@ var (
 	configFile string
 )
 
+// init initializes the command-line flags.
 func init() {
 	flag.StringVar(&configFile, "config", "", "config file path")
 	flag.Parse()
@@ -24,6 +25,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	// Run the Kafka traffic generator with the provided configuration
 	if err = generator.Run(config); err != nil {
 		log.Fatalln(err)
 	}

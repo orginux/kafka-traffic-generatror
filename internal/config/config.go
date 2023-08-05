@@ -1,3 +1,4 @@
+// Package config provides functionality for loading and handling configuration settings.
 package config
 
 import (
@@ -15,16 +16,19 @@ type Topic struct {
 	MsgDelay int    `yaml:"batch_delay_ms"`
 }
 
+// Field defines the structure of a field configuration for generating fake data.
 type Field struct {
 	Name     string            `yaml:"name"`
 	Function string            `yaml:"function"`
 	Params   map[string]string `yaml:"params"`
 }
 
+// Kafka defines the Kafka-related configuration settings.
 type Kafka struct {
 	Host string `yaml:"host"`
 }
 
+// Config defines the overall configuration structure.
 type Config struct {
 	Kafka  Kafka   `yaml:"kafka"`
 	Topic  Topic   `yaml:"topic"`
