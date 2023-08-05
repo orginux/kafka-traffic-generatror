@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/brianvoe/gofakeit"
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/segmentio/kafka-go"
 
 	"kafka-traffic-generator/internal/config"
