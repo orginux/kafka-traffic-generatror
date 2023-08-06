@@ -2,18 +2,31 @@
 package config
 
 import (
-	"fmt"
+	"flag"
+	"log"
 	"os"
 
-	"gopkg.in/yaml.v3"
+	"github.com/ilyakaznacheev/cleanenv"
 )
+
+// Config defines the overall configuration structure.
+type Config struct {
+	Kafka  Kafka   `yaml:"kafka"`
+	Topic  Topic   `yaml:"topic"`
+	Fields []Field `yaml:"fields"`
+}
+
+// Kafka defines the Kafka-related configuration settings.
+type Kafka struct {
+	Host string `yaml:"host" env:"KTG_KAFKA" env-default:"localhost:9092"`
+}
 
 // Topic defines the structure of a Kafka topic
 type Topic struct {
-	Name     string `yaml:"name"`
-	NumMsgs  int    `yaml:"batch_msgs"`
-	NumBatch int    `yaml:"batch_count"`
-	MsgDelay int    `yaml:"batch_delay_ms"`
+	Name     string `yaml:"name" env:"KTG_TOPIC"`
+	NumMsgs  int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-upd`
+	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-default:"0" env-upd`
+	MsgDelay int    `yaml:"batch_delay_ms" env:"KTG_DELAY" env-default:"1000" env-upd`
 }
 
 // Field defines the structure of a field configuration for generating fake data.
@@ -23,29 +36,32 @@ type Field struct {
 	Params   map[string]string `yaml:"params"`
 }
 
-// Kafka defines the Kafka-related configuration settings.
-type Kafka struct {
-	Host string `yaml:"host"`
-}
+var (
+	configPath string
+)
 
-// Config defines the overall configuration structure.
-type Config struct {
-	Kafka  Kafka   `yaml:"kafka"`
-	Topic  Topic   `yaml:"topic"`
-	Fields []Field `yaml:"fields"`
+// init initializes the command-line flags.
+func init() {
+	flag.StringVar(&configPath, "config", "", "config file path")
+	flag.Parse()
 }
 
 // Load loads the configuration from a YAML file.
-func Load(filename string) (Config, error) {
-	yamlFile, err := os.ReadFile(filename)
-	if err != nil {
-		return Config{}, fmt.Errorf("Error reading YAML file: %v\n", err)
+func Load() (*Config, error) {
+	log.Println(configPath)
+	if configPath == "" {
+		configPath = os.Getenv("KTG_CONFIG")
+	}
+	log.Println(configPath)
+
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		return nil, err
 	}
 
 	var config Config
-	if err := yaml.Unmarshal(yamlFile, &config); err != nil {
-		return Config{}, fmt.Errorf("Error parsing YAML file: %v\n", err)
+	if err := cleanenv.ReadConfig(configPath, &config); err != nil {
+		return nil, err
 	}
 
-	return config, nil
+	return &config, nil
 }

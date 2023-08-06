@@ -1,11 +1,4 @@
 ---
-kafka:
-  host: "kafka:29092"
-topic:
-  name: topic1
-  batch_msgs: 50
-  batch_count: 2
-  batch_delay_ms: 1000
 fields:
   - name: "Date"
     function: daterange
