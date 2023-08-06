@@ -5,12 +5,12 @@ Messages are generated in `<key:int><valuse:json>` format, you can define fields
 
 # Usage
 ## Binary file
-1. Build:
+#### 1. Build:
 ```bash
 make build
 ```
 
-2. Create a configuration file in YAML format, e.g., topic.yaml, with the following structure:
+#### 2. Create a configuration file in YAML format, e.g., topic.yaml, with the following structure:
 ```yaml
 kafka:
   host: <KAFKA_BROKER_HOST>
@@ -62,14 +62,14 @@ fields:
 ```
 Additional examples located within the `./examples` folder, and a comprehensive list of functions is available in the [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
 
-3. Run the program with the path to the configuration file:
+#### 3. Run the program with the path to the configuration file:
 
 ```bash
 ./bin/kafka-traffic-generator --config examples/simple.yaml
 ```
 The program will load the configuration, generate the specified number of messages with random data, and send them to the Kafka topic.
 
-4. After that you can see the messages in your Kafka topic:
+#### 4. After that you can see the messages in your Kafka topic:
 ```json
 {"Date":"1993-04-02 17:44:04","Email":"tedvon@carroll.biz","Message":"You with nobody Gabonese my."}
 {"Date":"1993-04-20 02:18:18","Email":"ethylmcclure@goldner.info","Message":"By such where deeply so."}
