@@ -36,7 +36,31 @@ fields:
       <PARAMETER_2>: <VALUE_2>
       ...
 ```
-You can find more exmples in the `./examples` directory and all functions are listed in [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
+Example of generating email sending events in a specific time period:
+```yaml
+---
+kafka:
+  host: "kafka:29092"
+topic:
+  name: emails
+  batch_msgs: 50
+  batch_count: 2000
+  batch_delay_ms: 500
+fields:
+  - name: "Date"
+    function: daterange
+    params:
+      format: "yyyy-MM-dd HH:mm:ss"
+      startdate: "1993-03-13 15:11:02"
+      enddate:  "1993-05-16 15:11:02"
+  - name: "Email"
+    function: email
+    params: {}
+  - name: "Message"
+    function: sentence
+    params: {}
+```
+Additional examples located within the `./examples` folder, and a comprehensive list of functions is available in the [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
 
 3. Run the program with the path to the configuration file:
 
