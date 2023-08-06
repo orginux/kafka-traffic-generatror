@@ -19,6 +19,9 @@ test: test-up
 
 test-local: build-image test
 
+lint:
+	docker run --rm -v $(PWD):/app -w /app golangci/golangci-lint:v1.53.3 golangci-lint run -v
+
 
 ## Kafka
 test-topic-create:
