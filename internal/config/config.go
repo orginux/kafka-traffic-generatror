@@ -23,10 +23,10 @@ type Kafka struct {
 
 // Topic defines the structure of a Kafka topic
 type Topic struct {
-	Name     string `yaml:"name" env:"KTG_TOPIC" env-description:"Kafka topic name"`
-	NumMsgs  int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-description:"Number of messages per batch" env-upd`
-	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches" env-default:"0" env-upd`
-	MsgDelay int    `yaml:"batch_delay_ms" env:"KTG_DELAY" env-description:"Delay between batches in milliseconds" env-default:"1000" env-upd`
+	Name     string `yaml:"name" env:"KTG_TOPIC" env-description:"Kafka topic name" env-required:"true"`
+	NumMsgs  int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-description:"Number of messages per batch" env-default:"100" env-upd:"true"`
+	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches" env-default:"0" env-upd:"true"`
+	MsgDelay int    `yaml:"batch_delay_ms" env:"KTG_DELAY" env-description:"Delay between batches in milliseconds" env-default:"1000" env-upd:"true"`
 }
 
 // Field defines the structure of a field configuration for generating fake data.
@@ -46,12 +46,12 @@ func init() {
 	flag.StringVar(&configPath, "config", "", "config file path")
 
 	// create flag set using `flag` package
-	fset := flag.NewFlagSet("Example", flag.ContinueOnError)
+	fset := flag.NewFlagSet("Environment variables", flag.ContinueOnError)
 
 	// get config usage with wrapped flag usage
 	fset.Usage = cleanenv.FUsage(fset.Output(), &config, nil, fset.Usage)
 
-	fset.Parse(os.Args[1:])
+	_ = fset.Parse(os.Args[1:])
 	flag.Parse()
 }
 
