@@ -8,7 +8,5 @@ fields:
       enddate:  "1993-05-16 15:11:02"
   - name: "Email"
     function: email
-    params: {}
   - name: "Message"
     function: sentence
-    params: {}
