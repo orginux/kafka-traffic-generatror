@@ -43,30 +43,37 @@ var (
 
 // init initializes the command-line flags.
 func init() {
-	flag.StringVar(&configPath, "config", "", "config file path")
+	// Set up a command-line flag for specifying the configuration file path.
+	flag.StringVar(&configPath, "config", "", "Path to the configuration file")
 
-	// create flag set using `flag` package
+	// Create a flag set using the `flag` package.
 	fset := flag.NewFlagSet("Environment variables", flag.ContinueOnError)
 
-	// get config usage with wrapped flag usage
+	// Configure the flag set usage with cleanenv's wrapped flag usage.
 	fset.Usage = cleanenv.FUsage(fset.Output(), &config, nil, fset.Usage)
 
+	// Parse the command-line arguments.
 	_ = fset.Parse(os.Args[1:])
+
+	// Parse any remaining flags.
 	flag.Parse()
 }
 
 // Load loads the configuration from a YAML file.
 func Load() (*Config, error) {
-	log.Println(configPath)
+	// Check if a configuration path is provided, otherwise fetch from environment variable.
 	if configPath == "" {
 		configPath = os.Getenv("KTG_CONFIG")
 	}
-	log.Println(configPath)
 
+	log.Println("Detected configuration file at:", configPath)
+
+	// Check if the configuration file exists.
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		return nil, err
 	}
 
+	// Read and parse the configuration.
 	if err := cleanenv.ReadConfig(configPath, &config); err != nil {
 		return nil, err
 	}
