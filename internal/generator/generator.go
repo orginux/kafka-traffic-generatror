@@ -36,6 +36,7 @@ func Run(config config.Config) error {
 		log.Printf("Delaying %d ms before the next batch\n", config.Topic.MsgDelay)
 		time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
 
+		// If NumBatch =< 0 (default) -- Unlimited number of batches
 		if config.Topic.NumBatch > 0 {
 			batchNum++
 		}
