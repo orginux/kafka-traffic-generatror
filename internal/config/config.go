@@ -18,15 +18,15 @@ type Config struct {
 
 // Kafka defines the Kafka-related configuration settings.
 type Kafka struct {
-	Host string `yaml:"host" env:"KTG_KAFKA" env-default:"localhost:9092"`
+	Host string `yaml:"host" env:"KTG_KAFKA" env-description:"Kafka host address" env-default:"localhost:9092"`
 }
 
 // Topic defines the structure of a Kafka topic
 type Topic struct {
-	Name     string `yaml:"name" env:"KTG_TOPIC"`
-	NumMsgs  int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-upd`
-	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-default:"0" env-upd`
-	MsgDelay int    `yaml:"batch_delay_ms" env:"KTG_DELAY" env-default:"1000" env-upd`
+	Name     string `yaml:"name" env:"KTG_TOPIC" env-description:"Kafka topic name"`
+	NumMsgs  int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-description:"Number of messages per batch" env-upd`
+	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches" env-default:"0" env-upd`
+	MsgDelay int    `yaml:"batch_delay_ms" env:"KTG_DELAY" env-description:"Delay between batches in milliseconds" env-default:"1000" env-upd`
 }
 
 // Field defines the structure of a field configuration for generating fake data.
@@ -38,11 +38,20 @@ type Field struct {
 
 var (
 	configPath string
+	config     Config
 )
 
 // init initializes the command-line flags.
 func init() {
 	flag.StringVar(&configPath, "config", "", "config file path")
+
+	// create flag set using `flag` package
+	fset := flag.NewFlagSet("Example", flag.ContinueOnError)
+
+	// get config usage with wrapped flag usage
+	fset.Usage = cleanenv.FUsage(fset.Output(), &config, nil, fset.Usage)
+
+	fset.Parse(os.Args[1:])
 	flag.Parse()
 }
 
@@ -58,7 +67,6 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
-	var config Config
 	if err := cleanenv.ReadConfig(configPath, &config); err != nil {
 		return nil, err
 	}
