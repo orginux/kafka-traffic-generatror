@@ -40,7 +40,7 @@ Example of generating email sending events in a specific time period:
 ```yaml
 ---
 kafka:
-  host: "kafka:29092"
+  host: "kafka:9092"
 topic:
   name: emails
   batch_msgs: 50
@@ -68,6 +68,15 @@ Additional examples located within the `./examples` folder, and a comprehensive 
 ./bin/kafka-traffic-generator --config examples/simple.yaml
 ```
 The program will load the configuration, generate the specified number of messages with random data, and send them to the Kafka topic.
+
+4. After that you can see the messages in your Kafka topic:
+```json
+{"Date":"1993-04-02 17:44:04","Email":"tedvon@carroll.biz","Message":"You with nobody Gabonese my."}
+{"Date":"1993-04-20 02:18:18","Email":"ethylmcclure@goldner.info","Message":"By such where deeply so."}
+{"Date":"1993-05-08 01:07:46","Email":"betsyoreilly@welch.info","Message":"Firstly of as board she."}
+{"Date":"1993-05-08 08:25:17","Email":"theresiapollich@yost.info","Message":"Whom koala scarcely daily how."}
+{"Date":"1993-04-28 02:34:36","Email":"colinernser@powlowski.biz","Message":"Other paint yesterday constantly below."}
+```
 
 ## Docker Image
 A Docker image is available for easy deployment of the Kafka Traffic Generator.
