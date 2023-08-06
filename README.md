@@ -99,7 +99,13 @@ services:
         source: ./configs/
         target: /etc/ktg/
         read_only: true
-    command: --config /etc/ktg/test_1.yaml
+    environment:
+      KTG_CONFIG: /etc/ktg/test_1.yaml
+      KTG_KAFKA: "kafka:29092"
+      KTG_TOPIC: topic1
+      KTG_MSGNUM: 10
+      KTG_DELAY: 500
+      KTG_BATCHNUM: 5
 ```
 
 # Dependencies
