@@ -1,0 +1,15 @@
+---
+kafka:
+  host: "localhost:9092"
+topic:
+  name: topic1
+  batch_msgs: 1
+  batch_count: 10
+  batch_delay_ms: 1000
+fields:
+  - name: MovieInfo
+    function: movie
+  - name: MovieName
+    function: moviename
+  - name: MovieGenre
+    function: moviegenre

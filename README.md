@@ -36,7 +36,7 @@ fields:
       <PARAMETER_2>: <VALUE_2>
       ...
 ```
-All functions are listed in [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
+You can find more exmples in the `./examples` directory and all functions are listed in [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
 
 3. Run the program with the path to the configuration file:
 

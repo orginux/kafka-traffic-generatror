@@ -115,6 +115,7 @@ jobs:
       - name: Integration tests
         run: |
           make test
+          make test-examples
           make test-down
 
   push-docker:

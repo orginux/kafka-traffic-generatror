@@ -1,0 +1,23 @@
+---
+kafka:
+  host: "localhost:9092"
+topic:
+  name: topic1
+  batch_msgs: 100
+  batch_count: 10
+  batch_delay_ms: 500
+fields:
+  - name: Price
+    function: price
+  - name: CreditCardInfo
+    function: creditcard
+  - name: CurrencyInfo
+    function: currency
+  - name: AchRouting
+    function: achrouting
+  - name: AchAccount
+    function: achaccount
+  - name: BitcoinAddress
+    function: bitcoinaddress
+  - name: BitcoinPrivateKey
+    function: bitcoinprivatekey

@@ -7,7 +7,6 @@ topic:
   batch_count: 10
   batch_delay_ms: 1000
 fields:
-# https://github.com/brianvoe/gofakeit#datetime
   - name: Date
     function: date
   - name: DateRange
@@ -16,9 +15,31 @@ fields:
       format: "yyyy-MM-dd HH:mm:ss"
       startdate: "2025-01-01 00:00:00"
       enddate:  "2025-12-31 00:00:00"
-  - name: Year
-    function: year
+  - name: NanoSecond
+    function: nanosecond
+  - name: Second
+    function: second
+  - name: Minute
+    function: minute
+  - name: Hour
+    function: hour
   - name: Month
     function: month
+  - name: MonthString
+    function: monthstring
   - name: Day
     function: day
+  - name: WeekDay
+    function: weekday
+  - name: Year
+    function: year
+  - name: TimeZone
+    function: timezone
+  - name: TimeZoneAbv
+    function: timezoneabv
+  - name: TimeZoneFull
+    function: timezonefull
+  - name: TimeZoneOffset
+    function: timezoneoffset
+  - name: TimeZoneRegion
+    function: timezoneregion
