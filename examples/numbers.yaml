@@ -1,0 +1,31 @@
+---
+kafka:
+  host: "localhost:9092"
+topic:
+  name: topic1
+  batch_msgs: 3
+  batch_count: 10
+  batch_delay_ms: 1000
+fields:
+  - name: Number
+    function: number
+  - name: Int8
+    function: int8
+  - name: Int16
+    function: int16
+  - name: Int32
+    function: int32
+  - name: Int64
+    function: int64
+  - name: Uint8
+    function: uint8
+  - name: Uint16
+    function: uint16
+  - name: Uint32
+    function: uint32
+  - name: Uint64
+    function: uint64
+  - name: Float32
+    function: float32
+  - name: Float64
+    function: float64

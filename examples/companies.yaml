@@ -1,0 +1,29 @@
+---
+kafka:
+  host: "localhost:9092"
+topic:
+  name: topic1
+  batch_msgs: 1
+  batch_count: 10
+  batch_delay_ms: 1000
+fields:
+  - name: BusinessBlurb
+    function: bs
+  - name: Blurb
+    function: blurb
+  - name: BuzzWord
+    function: buzzword
+  - name: CompanyName
+    function: company
+  - name: CompanySuffix
+    function: companysuffix
+  - name: JobInfo
+    function: job
+  - name: JobDescriptor
+    function: jobdescriptor
+  - name: JobLevel
+    function: joblevel
+  - name: JobTitle
+    function: jobtitle
+  - name: Slogan
+    function: slogan

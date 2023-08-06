@@ -32,4 +32,6 @@ test-topic-lag:
 
 ## Generate messages
 test-generate: build
-	./bin/kafka-traffic-generator --config examples/data-time.yaml
+	./bin/kafka-traffic-generator --config examples/persons-address.yaml
+test-examples:
+	bash ./tests/scripts/test-examples.sh

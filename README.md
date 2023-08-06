@@ -5,12 +5,12 @@ Messages are generated in `<key:int><valuse:json>` format, you can define fields
 
 # Usage
 ## Binary file
-1. Build:
+#### 1. Build:
 ```bash
 make build
 ```
 
-2. Create a configuration file in YAML format, e.g., topic.yaml, with the following structure:
+#### 2. Create a configuration file in YAML format, e.g., topic.yaml, with the following structure:
 ```yaml
 kafka:
   host: <KAFKA_BROKER_HOST>
@@ -36,14 +36,47 @@ fields:
       <PARAMETER_2>: <VALUE_2>
       ...
 ```
-All functions are listed in [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
+Example of generating email sending events in a specific time period:
+```yaml
+---
+kafka:
+  host: "kafka:9092"
+topic:
+  name: emails
+  batch_msgs: 50
+  batch_count: 2000
+  batch_delay_ms: 500
+fields:
+  - name: "Date"
+    function: daterange
+    params:
+      format: "yyyy-MM-dd HH:mm:ss"
+      startdate: "1993-03-13 15:11:02"
+      enddate:  "1993-05-16 15:11:02"
+  - name: "Email"
+    function: email
+    params: {}
+  - name: "Message"
+    function: sentence
+    params: {}
+```
+Additional examples located within the `./examples` folder, and a comprehensive list of functions is available in the [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
 
-3. Run the program with the path to the configuration file:
+#### 3. Run the program with the path to the configuration file:
 
 ```bash
 ./bin/kafka-traffic-generator --config examples/simple.yaml
 ```
 The program will load the configuration, generate the specified number of messages with random data, and send them to the Kafka topic.
+
+#### 4. After that you can see the messages in your Kafka topic:
+```json
+{"Date":"1993-04-02 17:44:04","Email":"tedvon@carroll.biz","Message":"You with nobody Gabonese my."}
+{"Date":"1993-04-20 02:18:18","Email":"ethylmcclure@goldner.info","Message":"By such where deeply so."}
+{"Date":"1993-05-08 01:07:46","Email":"betsyoreilly@welch.info","Message":"Firstly of as board she."}
+{"Date":"1993-05-08 08:25:17","Email":"theresiapollich@yost.info","Message":"Whom koala scarcely daily how."}
+{"Date":"1993-04-28 02:34:36","Email":"colinernser@powlowski.biz","Message":"Other paint yesterday constantly below."}
+```
 
 ## Docker Image
 A Docker image is available for easy deployment of the Kafka Traffic Generator.
