@@ -12,6 +12,7 @@ import (
 
 // Config defines the overall configuration structure.
 type Config struct {
+	Env    string  `yaml:"env" env-description:"Kafka topic name" env-default:"local"`
 	Kafka  Kafka   `yaml:"kafka"`
 	Topic  Topic   `yaml:"topic"`
 	Fields []Field `yaml:"fields"`
