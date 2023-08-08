@@ -14,7 +14,7 @@ test-down:
 test-start-kafka:
 	docker compose --file tests/docker-compose.yml up --remove-orphans -d
 
-test:
+test: test-up
 	docker compose --file tests/docker-compose-ktg.yml up --exit-code-from ktg
 
 test-local: build-image test
