@@ -3,6 +3,7 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -36,6 +37,10 @@ type Field struct {
 	Params   map[string]string `yaml:"params"`
 }
 
+const (
+	envConfigPath = "KTG_CONFIG"
+)
+
 var (
 	configPath string
 	config     Config
@@ -61,9 +66,14 @@ func init() {
 
 // Load loads the configuration from a YAML file.
 func Load() (*Config, error) {
-	// Check if a configuration path is provided, otherwise fetch from environment variable.
+	// Check if a configuration path is provided; otherwise, fetch from environment variable.
 	if configPath == "" {
-		configPath = os.Getenv("KTG_CONFIG")
+		log.Println("Configuration not provided via flag, checking environment variables")
+
+		configPath = os.Getenv(envConfigPath)
+		if configPath == "" {
+			return nil, fmt.Errorf("%s environment variable not set\n", envConfigPath)
+		}
 	}
 
 	log.Println("Detected configuration file at:", configPath)
