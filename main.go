@@ -1,11 +1,13 @@
 package main
 
 import (
+	"log"
 	"log/slog"
 	"os"
 
 	"kafka-traffic-generator/internal/config"
 	"kafka-traffic-generator/internal/generator"
+	"kafka-traffic-generator/internal/lib/logger/sl"
 )
 
 const (
@@ -15,21 +17,22 @@ const (
 )
 
 func main() {
-	// Setup the logger based on the environment
-	logger := setupLogger(config.Env)
-	logger.Info("Starting kafka-traffic-generator")
 
 	// Load the topic description from a YAML file
 	config, err := config.Load()
 	if err != nil {
-		log.Fatalln(err)
-		logger.
+		log.Fatalln("Failed to load configuration", err)
 	}
+
+	// Setup the logger based on the environment
+	logger := setupLogger(config.Env)
+	logger.Info("Starting kafka-traffic-generator")
 
 	// Run the Kafka traffic generator with the provided configuration
 	if err = generator.Run(*config); err != nil {
-		log.Fatalln(err)
+		logger.Error("Failed to run generator", sl.Err(err))
 	}
+	logger.Info("Stopping kafka-traffic-generator")
 }
 
 // setupLogger configures and returns a logger based on the environment.
