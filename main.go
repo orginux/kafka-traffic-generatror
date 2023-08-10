@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -17,11 +17,11 @@ const (
 )
 
 func main() {
-
 	// Load the topic description from a YAML file
 	config, err := config.Load()
 	if err != nil {
-		log.Fatalln("Failed to load configuration", err)
+		fmt.Println("Failed to load configuration", err)
+		os.Exit(1)
 	}
 
 	// Setup the logger based on the environment
@@ -29,7 +29,7 @@ func main() {
 	logger.Info("Starting kafka-traffic-generator")
 
 	// Run the Kafka traffic generator with the provided configuration
-	if err = generator.Run(*config); err != nil {
+	if err = generator.Run(*config, logger); err != nil {
 		logger.Error("Failed to run generator", sl.Err(err))
 	}
 	logger.Info("Stopping kafka-traffic-generator")

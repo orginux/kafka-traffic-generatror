@@ -4,7 +4,6 @@ package config
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -69,7 +68,7 @@ func init() {
 func Load() (*Config, error) {
 	// Check if a configuration path is provided; otherwise, fetch from environment variable.
 	if configPath == "" {
-		log.Println("Configuration not provided via flag, checking environment variables")
+		fmt.Println("Configuration not provided via flag, checking environment variables")
 
 		configPath = os.Getenv(envConfigPath)
 		if configPath == "" {
@@ -77,7 +76,7 @@ func Load() (*Config, error) {
 		}
 	}
 
-	log.Println("Detected configuration file at:", configPath)
+	fmt.Println("Detected configuration file at:", configPath)
 
 	// Check if the configuration file exists.
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
