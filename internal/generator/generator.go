@@ -32,7 +32,7 @@ func Run(config config.Config, logger *slog.Logger) error {
 	var batchNum int
 	for batchNum <= config.Topic.NumBatch {
 		logger.Info("Batches statistics", slog.Int("batch num", batchNum))
-		batch, err := generateBatch(config.Topic.NumMsgs, fields)
+		batch, err := generateBatch(config.Topic.NumMsgs, fields, logger)
 		if err != nil {
 			return err
 		}
@@ -67,7 +67,12 @@ func generateFields(fieldConfigs []config.Field, logger *slog.Logger) ([]gofakei
 		logger.Debug("Preparing fake data", slog.String("field", fieldConfig.Name), slog.String("function", fieldConfig.Function))
 		params := gofakeit.NewMapParams()
 		for key, value := range fieldConfig.Params {
-			logger.Debug("params", slog.String("key", key))
+			logger.Debug(
+				"log",
+				slog.String("Field", fieldConfig.Name),
+				slog.String("Function", fieldConfig.Function),
+				slog.String("param", key),
+			)
 			params.Add(key, value)
 		}
 
@@ -84,11 +89,16 @@ func generateFields(fieldConfigs []config.Field, logger *slog.Logger) ([]gofakei
 }
 
 // generateBatch generates a batch of Kafka messages with random key-value pairs.
-func generateBatch(numMsgs int, fields []gofakeit.Field) ([]kafka.Message, error) {
+func generateBatch(numMsgs int, fields []gofakeit.Field, logger *slog.Logger) ([]kafka.Message, error) {
+	logger = logger.With(
+		slog.String("subcomponent", "batch generator"),
+	)
 	var batch []kafka.Message
+
 	for i := 0; i < numMsgs; i++ {
 		// TODO make it optional
 		key := strconv.Itoa(rand.Intn(100))
+		logger.Debug("Generate batch", slog.String("kafka msg key", key))
 
 		// Generate the random fake data
 		jo := gofakeit.JSONOptions{
@@ -108,6 +118,7 @@ func generateBatch(numMsgs int, fields []gofakeit.Field) ([]kafka.Message, error
 		}
 		batch = append(batch, msg)
 	}
+	logger.Debug("Batch generated", slog.Int("msg in batch", len(batch)))
 	return batch, nil
 }
 

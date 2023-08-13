@@ -11,10 +11,10 @@ import (
 
 // Config defines the overall configuration structure.
 type Config struct {
-	Env    string  `yaml:"env" env-description:"Kafka topic name" env-default:"local"`
-	Kafka  Kafka   `yaml:"kafka"`
-	Topic  Topic   `yaml:"topic"`
-	Fields []Field `yaml:"fields"`
+	Kafka    Kafka   `yaml:"kafka"`
+	Topic    Topic   `yaml:"topic"`
+	Fields   []Field `yaml:"fields"`
+	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level: debug, information, warning, error" env-default:"information"`
 }
 
 // Kafka defines the Kafka-related configuration settings.

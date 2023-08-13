@@ -11,9 +11,11 @@ import (
 )
 
 const (
-	// envLocal = "local"
-	envDev  = "dev"
-	envProd = "prod"
+	//  Logging levels:
+	// debug, information (default), warning, error.
+	logLevelDebug   = "debug"
+	logLevelWarning = "warning"
+	logLevelError   = "err"
 )
 
 func main() {
@@ -25,7 +27,7 @@ func main() {
 	}
 
 	// Setup the logger based on the environment
-	logger := setupLogger(config.Env)
+	logger := setupLogger(config.LogLevel)
 	logger.Info("Starting kafka-traffic-generator")
 
 	// Run the Kafka traffic generator with the provided configuration
@@ -36,22 +38,27 @@ func main() {
 }
 
 // setupLogger configures and returns a logger based on the environment.
-func setupLogger(env string) *slog.Logger {
+func setupLogger(level string) *slog.Logger {
 	var log *slog.Logger
 
-	switch env {
-	case envDev:
-		log = slog.New(
-			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
-		)
-	case envProd:
-		log = slog.New(
-			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
-		)
-	// Local environment
-	default:
+	switch level {
+	case logLevelDebug:
+		// dev
 		log = slog.New(
 			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+		)
+		// prod
+	case logLevelWarning:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn}),
+		)
+	case logLevelError:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelError}),
+		)
+	default:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
 		)
 	}
 
