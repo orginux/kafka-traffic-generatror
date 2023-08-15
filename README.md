@@ -8,11 +8,13 @@ Messages are generated in `<key:int><valuse:json>` format, you can define fields
 Usage of kafka-traffic-generator:
 Environment variables:
   KTG_BATCHNUM int
-        Number of batches (default "0")
+        Number of batches (0 - unlimited) (default "0")
   KTG_DELAY int
         Delay between batches in milliseconds (default "1000")
   KTG_KAFKA string
         Kafka host address (default "localhost:9092")
+  KTG_LOGLEVEL string
+        Logging level: debug, information, warning, error (default "information")
   KTG_MSGNUM int
         Number of messages per batch (default "100")
   KTG_TOPIC string
@@ -32,7 +34,7 @@ make build
 ```yaml
 kafka:
   host: <KAFKA_BROKER_HOST>
-
+loglevel: [debug, information, warning, error]
 topic:
   name: <TOPIC_NAME>
   batch_msgs: Positive integer
@@ -124,6 +126,7 @@ services:
       KTG_MSGNUM: 10
       KTG_DELAY: 500
       KTG_BATCHNUM: 5
+      KTG_LOGLEVEL: debug
 ```
 
 # ToDo:
