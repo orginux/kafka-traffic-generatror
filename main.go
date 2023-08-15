@@ -1,21 +1,66 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"log/slog"
+	"os"
 
 	"kafka-traffic-generator/internal/config"
 	"kafka-traffic-generator/internal/generator"
+	"kafka-traffic-generator/internal/lib/logger/sl"
+)
+
+const (
+	//  Logging levels:
+	// debug, information (default), warning, error.
+	logLevelDebug   = "debug"
+	logLevelWarning = "warning"
+	logLevelError   = "err"
 )
 
 func main() {
 	// Load the topic description from a YAML file
 	config, err := config.Load()
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println("Failed to load configuration", err)
+		os.Exit(1)
 	}
 
+	// Setup the logger based on the environment
+	logger := setupLogger(config.LogLevel)
+	logger.Info("Starting kafka-traffic-generator")
+
 	// Run the Kafka traffic generator with the provided configuration
-	if err = generator.Run(*config); err != nil {
-		log.Fatalln(err)
+	if err = generator.Run(*config, logger); err != nil {
+		logger.Error("Failed to run generator", sl.Err(err))
 	}
+	logger.Info("Stopping kafka-traffic-generator")
+}
+
+// setupLogger configures and returns a logger based on the environment.
+func setupLogger(level string) *slog.Logger {
+	var log *slog.Logger
+
+	switch level {
+	case logLevelDebug:
+		// dev
+		log = slog.New(
+			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+		)
+		// prod
+	case logLevelWarning:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn}),
+		)
+	case logLevelError:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelError}),
+		)
+	default:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
+		)
+	}
+
+	return log
 }

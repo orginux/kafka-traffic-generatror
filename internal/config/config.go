@@ -3,7 +3,7 @@ package config
 
 import (
 	"flag"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -11,9 +11,10 @@ import (
 
 // Config defines the overall configuration structure.
 type Config struct {
-	Kafka  Kafka   `yaml:"kafka"`
-	Topic  Topic   `yaml:"topic"`
-	Fields []Field `yaml:"fields"`
+	Kafka    Kafka   `yaml:"kafka"`
+	Topic    Topic   `yaml:"topic"`
+	Fields   []Field `yaml:"fields"`
+	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level: debug, information, warning, error" env-default:"information"`
 }
 
 // Kafka defines the Kafka-related configuration settings.
@@ -25,7 +26,7 @@ type Kafka struct {
 type Topic struct {
 	Name     string `yaml:"name" env:"KTG_TOPIC" env-description:"Kafka topic name" env-required:"true"`
 	NumMsgs  int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-description:"Number of messages per batch" env-default:"100" env-upd:"true"`
-	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches" env-default:"0" env-upd:"true"`
+	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches (0 - unlimited)" env-default:"0" env-upd:"true"`
 	MsgDelay int    `yaml:"batch_delay_ms" env:"KTG_DELAY" env-description:"Delay between batches in milliseconds" env-default:"1000" env-upd:"true"`
 }
 
@@ -35,6 +36,10 @@ type Field struct {
 	Function string            `yaml:"function"`
 	Params   map[string]string `yaml:"params"`
 }
+
+const (
+	envConfigPath = "KTG_CONFIG"
+)
 
 var (
 	configPath string
@@ -61,12 +66,17 @@ func init() {
 
 // Load loads the configuration from a YAML file.
 func Load() (*Config, error) {
-	// Check if a configuration path is provided, otherwise fetch from environment variable.
+	// Check if a configuration path is provided; otherwise, fetch from environment variable.
 	if configPath == "" {
-		configPath = os.Getenv("KTG_CONFIG")
+		fmt.Println("Configuration not provided via flag, checking environment variables")
+
+		configPath = os.Getenv(envConfigPath)
+		if configPath == "" {
+			return nil, fmt.Errorf("%s environment variable not set\n", envConfigPath)
+		}
 	}
 
-	log.Println("Detected configuration file at:", configPath)
+	fmt.Println("Detected configuration file at:", configPath)
 
 	// Check if the configuration file exists.
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {

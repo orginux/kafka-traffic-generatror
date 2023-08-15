@@ -17,7 +17,8 @@ test-start-kafka:
 test: test-up
 	docker compose --file tests/docker-compose-ktg.yml up --exit-code-from ktg
 
-test-local: build-image test
+test-local: build-image
+	docker compose --file tests/docker-compose-ktg.yml up --exit-code-from ktg
 
 lint:
 	docker run --rm -v $(PWD):/app -w /app golangci/golangci-lint:v1.53.3 golangci-lint run -v
