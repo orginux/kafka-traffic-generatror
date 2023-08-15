@@ -3,7 +3,7 @@ name: Build a Docker image
 on:
   push:
     branches:
-      - '*'
+      - 'main'
   pull_request:
     branches:
       - 'main'
