@@ -15,12 +15,12 @@ import (
 	"kafka-traffic-generator/internal/config"
 )
 
-// Run generates and sends batches of Kafka messages based onthe provided configuration.
+// Run generates and sends batches of Kafka messages based on the provided configuration.
 func Run(config config.Config, logger *slog.Logger) error {
 	logger = logger.With(
 		slog.String("component", "generator"),
 	)
-	logger.Info("Sarting generator")
+	logger.Info("Generator started")
 
 	// Generate message parameters
 	fields, err := generateFields(config.Fields, logger)
@@ -31,7 +31,7 @@ func Run(config config.Config, logger *slog.Logger) error {
 	// Generate and send batches of messages
 	var batchNum int
 	for batchNum <= config.Topic.NumBatch {
-		logger.Info("Batches statistics", slog.Int("batch num", batchNum))
+		logger.Info("Batch statistics", slog.Int("batch number", batchNum))
 		batch, err := generateBatch(config.Topic.NumMsgs, fields, logger)
 		if err != nil {
 			return err
@@ -41,14 +41,16 @@ func Run(config config.Config, logger *slog.Logger) error {
 			return err
 		}
 
-		// Delay before sending the next batch
-		logger.Info("Delaying before the next batch:", slog.Int("ms", config.Topic.MsgDelay))
-		time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
+		if config.Topic.MsgDelay > 0 {
+			// Delay before sending the next batch
+			logger.Info("Delaying before the next batch:", slog.Int("milliseconds", config.Topic.MsgDelay))
+			time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
+		}
 
-		// If NumBatch =< 0 (default) -- Unlimited number of batches
+		// If NumBatch <= 0 (default) -- Unlimited number of batches
 		if config.Topic.NumBatch > 0 {
 			batchesLeft := config.Topic.NumBatch - batchNum
-			logger.Info("Batches statistics", slog.Int("left:", batchesLeft))
+			logger.Info("Batch statistics", slog.Int("left:", batchesLeft))
 			batchNum++
 		}
 	}
@@ -58,8 +60,7 @@ func Run(config config.Config, logger *slog.Logger) error {
 // generateFields generates a slice of gofakeit.Field based on the provided field configurations.
 func generateFields(fieldConfigs []config.Field, logger *slog.Logger) ([]gofakeit.Field, error) {
 	if len(fieldConfigs) == 0 {
-		logger.Debug("No fields to generate")
-		return nil, fmt.Errorf("Fields are not defined in config file")
+		return nil, fmt.Errorf("Fields are not defined in the config file")
 	}
 
 	var fields []gofakeit.Field
@@ -68,9 +69,9 @@ func generateFields(fieldConfigs []config.Field, logger *slog.Logger) ([]gofakei
 		params := gofakeit.NewMapParams()
 		for key, value := range fieldConfig.Params {
 			logger.Debug(
-				"log",
-				slog.String("Field", fieldConfig.Name),
-				slog.String("Function", fieldConfig.Function),
+				"Preparing fake data",
+				slog.String("field", fieldConfig.Name),
+				slog.String("function", fieldConfig.Function),
 				slog.String("param", key),
 			)
 			params.Add(key, value)
@@ -98,7 +99,7 @@ func generateBatch(numMsgs int, fields []gofakeit.Field, logger *slog.Logger) ([
 	for i := 0; i < numMsgs; i++ {
 		// TODO make it optional
 		key := strconv.Itoa(rand.Intn(100))
-		logger.Debug("Generate batch", slog.String("kafka msg key", key))
+		logger.Debug("Generate batch", slog.String("Kafka message key", key))
 
 		// Generate the random fake data
 		jo := gofakeit.JSONOptions{
@@ -118,7 +119,7 @@ func generateBatch(numMsgs int, fields []gofakeit.Field, logger *slog.Logger) ([
 		}
 		batch = append(batch, msg)
 	}
-	logger.Debug("Batch generated", slog.Int("msg in batch", len(batch)))
+	logger.Debug("Batch generated", slog.Int("messages in batch", len(batch)))
 	return batch, nil
 }
 

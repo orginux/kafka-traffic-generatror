@@ -26,7 +26,7 @@ type Kafka struct {
 type Topic struct {
 	Name     string `yaml:"name" env:"KTG_TOPIC" env-description:"Kafka topic name" env-required:"true"`
 	NumMsgs  int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-description:"Number of messages per batch" env-default:"100" env-upd:"true"`
-	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches" env-default:"0" env-upd:"true"`
+	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches (0 - unlimited)" env-default:"0" env-upd:"true"`
 	MsgDelay int    `yaml:"batch_delay_ms" env:"KTG_DELAY" env-description:"Delay between batches in milliseconds" env-default:"1000" env-upd:"true"`
 }
 
