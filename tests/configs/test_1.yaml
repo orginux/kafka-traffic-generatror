@@ -1,5 +1,4 @@
 ---
-loglevel: debug
 fields:
   - name: "Date"
     function: daterange

@@ -16,7 +16,7 @@ services:
       KTG_CONFIG: /etc/ktg/test_1.yaml
       KTG_KAFKA: "kafka:29092"
       KTG_TOPIC: topic1
-      KTG_MSGNUM: 10
+      KTG_MSGNUM: 5
       KTG_DELAY: 500
       KTG_BATCHNUM: 5
       KTG_LOGLEVEL: debug

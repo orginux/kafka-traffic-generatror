@@ -41,8 +41,8 @@ func Run(config config.Config, logger *slog.Logger) error {
 			return err
 		}
 
+		// Delay before sending the next batch
 		if config.Topic.MsgDelay > 0 {
-			// Delay before sending the next batch
 			logger.Info("Delaying before the next batch:", slog.Int("milliseconds", config.Topic.MsgDelay))
 			time.Sleep(time.Duration(config.Topic.MsgDelay) * time.Millisecond)
 		}
@@ -118,27 +118,36 @@ func generateBatch(numMsgs int, fields []gofakeit.Field, logger *slog.Logger) ([
 			Value: []byte(value),
 		}
 		batch = append(batch, msg)
+		logger.Debug("Message generated", slog.Int("msg num", i+1), slog.Int("ftom", numMsgs))
 	}
-	logger.Debug("Batch generated", slog.Int("messages in batch", len(batch)))
+	logger.Info("Batch generated", slog.Int("messages in batch", len(batch)))
 	return batch, nil
 }
 
 // sendBatch sends a batch of Kafka messages to the specified topic.
 func sendBatch(host, topic string, batch []kafka.Message, logger *slog.Logger) error {
+	logger = logger.With(
+		slog.String("subcomponent", "batch sender"),
+		slog.String("kafka", host),
+		slog.String("topic", topic),
+		slog.Int("messages", len(batch)),
+	)
 	conn := kafka.Writer{
 		Addr:  kafka.TCP(host),
 		Topic: topic,
 	}
-
+	logger.Debug("Connected to kafka")
+	logger.Debug("Sending batch")
 	err := conn.WriteMessages(context.Background(), batch...)
 	if err != nil {
 		return fmt.Errorf("Failed to write messages: %v\n", err)
 	}
-	logger.Info("Sent batch", slog.Int("messages", len(batch)))
+	logger.Info("Sent batch")
 
 	if err := conn.Close(); err != nil {
 		return fmt.Errorf("Failed to close the Kafka connection: %v\n", err)
 	}
+	logger.Debug("Connection with kafka closed")
 
 	return nil
 }
