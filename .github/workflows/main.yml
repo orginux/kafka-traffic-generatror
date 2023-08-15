@@ -42,7 +42,7 @@ jobs:
   build-go:
     needs:
       - hadolint
-        # - golangci
+      - golangci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
