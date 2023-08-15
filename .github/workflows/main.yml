@@ -24,7 +24,6 @@ jobs:
       - uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
-          ignore: DL3007 # base-debian11
 
   golangci:
     runs-on: ubuntu-latest
