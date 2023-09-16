@@ -11,6 +11,7 @@ import (
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/sasl/plain"
 
 	"kafka-traffic-generator/internal/config"
 )
@@ -38,6 +39,7 @@ func Run(config config.Config, logger *slog.Logger) error {
 		}
 
 		if err := sendBatch(config.Kafka.Host, config.Topic.Name, batch, logger); err != nil {
+			logger.Debug("Failed to send the batch")
 			return err
 		}
 
@@ -132,9 +134,24 @@ func sendBatch(host, topic string, batch []kafka.Message, logger *slog.Logger) e
 		slog.String("topic", topic),
 		slog.Int("messages", len(batch)),
 	)
+
+	/////
+	// Transports are responsible for managing connection pools and other resources,
+	// it's generally best to create a few of these and share them across your
+	// application.
+
+	sharedTransport := &kafka.Transport{
+		SASL: plain.Mechanism{
+			Username: "adminplain",
+			Password: "admin-secret",
+		},
+	}
+
+	/////
 	conn := kafka.Writer{
-		Addr:  kafka.TCP(host),
-		Topic: topic,
+		Addr:      kafka.TCP(host),
+		Topic:     topic,
+		Transport: sharedTransport,
 	}
 	logger.Debug("Connected to kafka")
 	logger.Debug("Sending batch")
