@@ -1,11 +1,11 @@
 ---
 kafka:
-  host: "localhost:9092"
+  host: "localhost:19092"
 topic:
-  name: topic1
+  name: test_1
   batch_msgs: 1
-  batch_count: 10
-  batch_delay_ms: 1000
+  batch_count: 100
+  batch_delay_ms: 100
 fields:
   - name: BeerAlcohol
     function: beeralcohol

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log/slog"
 	"os"
@@ -18,12 +19,44 @@ const (
 	logLevelError   = "err"
 )
 
+var (
+	singelModeConfig string
+	serverModeConfig string
+)
+
+// init initializes the command-line flags.
+func init() {
+	// Set up a command-line flag for specifying the configuration file path.
+	flag.StringVar(&singelModeConfig, "config", "", "Path to the configuration file")
+
+	// Set up a command-line flag for init server-mode.
+	flag.StringVar(&serverModeConfig, "server-config", "", "Configuration for start work in the api server mode")
+
+	// Create a flag set using the `flag` package.
+	// fset := flag.NewFlagSet("config mode", flag.ContinueOnError)
+
+	// Configure the flag set usage with cleanenv's wrapped flag usage.
+	// fset.Usage = cleanenv.FUsage(fset.Output(), &config.AppConfig, nil, fset.Usage)
+
+	// Parse the command-line arguments.
+	// _ = fset.Parse(os.Args[1:])
+
+	// Parse any remaining flags.
+	flag.Parse()
+}
+
 func main() {
-	// Load the topic description from a YAML file
-	config, err := config.Load()
-	if err != nil {
-		fmt.Println("Failed to load configuration", err)
-		os.Exit(1)
+
+	switch {
+	case singelModeConfig != "":
+		// Load the topic description from a YAML file
+		config, err := config.Load(singelModeConfig)
+		if err != nil {
+			fmt.Println("Failed to load configuration", err)
+			os.Exit(1)
+		}
+	case serverModeConfig != "":
+		fmt.Println("server mode")
 	}
 
 	// Setup the logger based on the environment

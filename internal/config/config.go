@@ -2,20 +2,11 @@
 package config
 
 import (
-	"flag"
 	"fmt"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
-
-// Config defines the overall configuration structure.
-type Config struct {
-	Kafka    Kafka   `yaml:"kafka"`
-	Topic    Topic   `yaml:"topic"`
-	Fields   []Field `yaml:"fields"`
-	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level: debug, information, warning, error" env-default:"information"`
-}
 
 // Kafka defines the Kafka-related configuration settings.
 type Kafka struct {
@@ -37,35 +28,24 @@ type Field struct {
 	Params   map[string]string `yaml:"params"`
 }
 
+// Config defines the overall configuration structure.
+type Config struct {
+	Kafka    Kafka   `yaml:"kafka"`
+	Topic    Topic   `yaml:"topic"`
+	Fields   []Field `yaml:"fields"`
+	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level: debug, information, warning, error" env-default:"information"`
+}
+
+var (
+	AppConfig Config
+)
+
 const (
 	envConfigPath = "KTG_CONFIG"
 )
 
-var (
-	configPath string
-	config     Config
-)
-
-// init initializes the command-line flags.
-func init() {
-	// Set up a command-line flag for specifying the configuration file path.
-	flag.StringVar(&configPath, "config", "", "Path to the configuration file")
-
-	// Create a flag set using the `flag` package.
-	fset := flag.NewFlagSet("Environment variables", flag.ContinueOnError)
-
-	// Configure the flag set usage with cleanenv's wrapped flag usage.
-	fset.Usage = cleanenv.FUsage(fset.Output(), &config, nil, fset.Usage)
-
-	// Parse the command-line arguments.
-	_ = fset.Parse(os.Args[1:])
-
-	// Parse any remaining flags.
-	flag.Parse()
-}
-
 // Load loads the configuration from a YAML file.
-func Load() (*Config, error) {
+func Load(configPath string) (*Config, error) {
 	// Check if a configuration path is provided; otherwise, fetch from environment variable.
 	if configPath == "" {
 		fmt.Println("Configuration not provided via flag, checking environment variables")
@@ -84,9 +64,9 @@ func Load() (*Config, error) {
 	}
 
 	// Read and parse the configuration.
-	if err := cleanenv.ReadConfig(configPath, &config); err != nil {
+	if err := cleanenv.ReadConfig(configPath, &AppConfig); err != nil {
 		return nil, err
 	}
 
-	return &config, nil
+	return &AppConfig, nil
 }
