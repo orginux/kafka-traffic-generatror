@@ -30,7 +30,7 @@ var (
 // init initializes the command-line flags.
 func init() {
 	// Set up a command-line flag for specifying the log level.
-	flag.StringVar(&serverModeConfig, "log-level", "", "Logging level: debug, [information], warning, error")
+	flag.StringVar(&logLevel, "log-level", "", "Logging level: debug, [information], warning, error")
 
 	// Set up a command-line flag for specifying the configuration file path.
 	flag.StringVar(&singelModeConfig, "config", "", "Path to the configuration file")
