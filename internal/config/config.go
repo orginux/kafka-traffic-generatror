@@ -30,10 +30,9 @@ type Field struct {
 
 // Config defines the overall configuration structure.
 type Config struct {
-	Kafka    Kafka   `yaml:"kafka"`
-	Topic    Topic   `yaml:"topic"`
-	Fields   []Field `yaml:"fields"`
-	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level: debug, information, warning, error" env-default:"information"`
+	Kafka  Kafka   `yaml:"kafka"`
+	Topic  Topic   `yaml:"topic"`
+	Fields []Field `yaml:"fields"`
 }
 
 var (
