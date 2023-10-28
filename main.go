@@ -60,7 +60,7 @@ func main() {
 
 	switch {
 	case config.API.Port != 0:
-		logger.Info("Starting the API server on port", slog.Int("port", config.API.Port))
+		logger.Info("Starting the API server", slog.Int("port", config.API.Port))
 	case len(config.Tasks) > 0:
 		logger.Info("Generating fake data for provided tasks")
 	default:
