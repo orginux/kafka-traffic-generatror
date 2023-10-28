@@ -1,0 +1,46 @@
+---
+kafka:
+  host: "localhost:9092"
+tasks:
+  - name: load for topic 1
+    topic:
+      name: topic1
+      batch_msgs: 1
+      batch_count: 10
+      batch_delay_ms: 1000
+    fields:
+      - name: PetName
+        function: petname
+      - name: AnimalName
+        function: animal
+      - name: AnimalType
+        function: animaltype
+      - name: FarmAnimal
+        function: farmanimal
+      - name: CatName
+        function: cat
+      - name: DogName
+        function: dog
+      - name: BirdName
+        function: bird
+  - name: load for topic 2
+    topic:
+      name: topic2
+      batch_msgs: 20
+      batch_count: 1000
+      batch_delay_ms: 4000
+    fields:
+      - name: PetName
+        function: petname
+      - name: AnimalName
+        function: animal
+      - name: AnimalType
+        function: animaltype
+      - name: FarmAnimal
+        function: farmanimal
+      - name: CatName
+        function: cat
+      - name: DogName
+        function: dog
+      - name: BirdName
+        function: bird

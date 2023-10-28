@@ -1,6 +1,6 @@
 ---
 kafka:
-  host: "localhost:19092"
+  host: "localhost:9092"
 topic:
   name: test_1
   batch_msgs: 1

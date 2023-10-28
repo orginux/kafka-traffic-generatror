@@ -13,6 +13,13 @@ type Kafka struct {
 	Host string `yaml:"host" env:"KTG_KAFKA" env-description:"Kafka host address" env-default:"localhost:9092"`
 }
 
+// Task defines the structure of each task
+type Task struct {
+	Name   string
+	Topic  Topic   `yaml:"topic"`
+	Fields []Field `yaml:"fields"`
+}
+
 // Topic defines the structure of a Kafka topic
 type Topic struct {
 	Name     string `yaml:"name" env:"KTG_TOPIC" env-description:"Kafka topic name" env-required:"true"`
@@ -28,11 +35,16 @@ type Field struct {
 	Params   map[string]string `yaml:"params"`
 }
 
+// API defines the structure of a fields configuration for the api server.
+type API struct {
+	Port int `yaml:"port"`
+}
+
 // Config defines the overall configuration structure.
 type Config struct {
-	Kafka  Kafka   `yaml:"kafka"`
-	Topic  Topic   `yaml:"topic"`
-	Fields []Field `yaml:"fields"`
+	Kafka Kafka  `yaml:"kafka"`
+	API   API    `yaml:"api"`
+	Tasks []Task `yaml:"tasks"`
 }
 
 var (

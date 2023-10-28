@@ -1,0 +1,5 @@
+---
+kafka:
+  host: "localhost:9092"
+api:
+  port: 8082

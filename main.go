@@ -2,13 +2,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log/slog"
 	"os"
 
 	"kafka-traffic-generator/internal/config"
-	"kafka-traffic-generator/internal/generator"
-	"kafka-traffic-generator/internal/lib/logger/sl"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
@@ -23,8 +20,8 @@ const (
 
 var (
 	singelModeConfig string
-	serverModeConfig string
-	logLevel         string
+	// serverModeConfig string
+	logLevel string
 )
 
 // init initializes the command-line flags.
@@ -36,7 +33,7 @@ func init() {
 	flag.StringVar(&singelModeConfig, "config", "", "Path to the configuration file")
 
 	// Set up a command-line flag for init server-mode.
-	flag.StringVar(&serverModeConfig, "server-config", "", "Configuration for start work in the api server mode")
+	// flag.StringVar(&serverModeConfig, "server-config", "", "Configuration for start work in the api server mode")
 
 	// Create a flag set using the `flag` package.
 	fset := flag.NewFlagSet("config mode", flag.ContinueOnError)
@@ -52,27 +49,24 @@ func init() {
 }
 
 func main() {
-
-	// Setup the logger based on the environment
 	logger := setupLogger(logLevel)
 	logger.Info("Starting kafka-traffic-generator")
 
-	if serverModeConfig != "" {
-		logger.Info("Stati in the server mode")
-		os.Exit(0)
-	}
-
 	config, err := config.Load(singelModeConfig)
 	if err != nil {
-		fmt.Println("Failed to load configuration", err)
+		logger.Error("Failed to load configuration", err)
 		os.Exit(1)
 	}
 
-	// Run the Kafka traffic generator with the provided configuration
-	if err = generator.Run(*config, logger); err != nil {
-		logger.Error("Failed to run generator", sl.Err(err))
+	switch {
+	case config.API.Port != 0:
+		logger.Info("Starting the API server on port", slog.Int("port", config.API.Port))
+	case len(config.Tasks) > 0:
+		logger.Info("Generating fake data for provided tasks")
+	default:
+		logger.Error("No configuration provided; exiting with an error")
+		os.Exit(1)
 	}
-	logger.Info("Stopping kafka-traffic-generator")
 }
 
 // setupLogger configures and returns a logger based on the environment.
