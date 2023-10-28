@@ -1,40 +1,42 @@
 ---
 kafka:
   host: "localhost:9092"
-topic:
-  name: topic1
-  batch_msgs: 10
-  batch_count: 5
-fields:
-  - name: URL
-    function: url
-  - name: DomainName
-    function: domainname
-  - name: DomainSuffix
-    function: domainsuffix
-  - name: IPv4Address
-    function: ipv4address
-  - name: IPv6Address
-    function: ipv6address
-  - name: MacAddress
-    function: macaddress
-  - name: HTTPStatusCode
-    function: httpstatuscode
-  - name: HTTPStatusCodeSimple
-    function: httpstatuscodesimple
-  - name: LogLevel
-    function: loglevel
-  - name: HTTPMethod
-    function: httpmethod
-  - name: HTTPVersion
-    function: httpversion
-  - name: UserAgent
-    function: useragent
-  - name: ChromeUserAgent
-    function: chromeuseragent
-  - name: FirefoxUserAgent
-    function: firefoxuseragent
-  - name: OperaUserAgent
-    function: operauseragent
-  - name: SafariUserAgent
-    function: safariuseragent
+tasks:
+  - name: internet
+    topic:
+      name: topic1
+      batch_msgs: 10
+      batch_count: 5
+    fields:
+      - name: URL
+        function: url
+      - name: DomainName
+        function: domainname
+      - name: DomainSuffix
+        function: domainsuffix
+      - name: IPv4Address
+        function: ipv4address
+      - name: IPv6Address
+        function: ipv6address
+      - name: MacAddress
+        function: macaddress
+      - name: HTTPStatusCode
+        function: httpstatuscode
+      - name: HTTPStatusCodeSimple
+        function: httpstatuscodesimple
+      - name: LogLevel
+        function: loglevel
+      - name: HTTPMethod
+        function: httpmethod
+      - name: HTTPVersion
+        function: httpversion
+      - name: UserAgent
+        function: useragent
+      - name: ChromeUserAgent
+        function: chromeuseragent
+      - name: FirefoxUserAgent
+        function: firefoxuseragent
+      - name: OperaUserAgent
+        function: operauseragent
+      - name: SafariUserAgent
+        function: safariuseragent

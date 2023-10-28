@@ -1,25 +1,27 @@
 ---
 kafka:
   host: "localhost:9092"
-topic:
-  name: test_1
-  batch_msgs: 1
-  batch_count: 100
-  batch_delay_ms: 100
-fields:
-  - name: BeerAlcohol
-    function: beeralcohol
-  - name: BeerBlg
-    function: beerblg
-  - name: BeerHop
-    function: beerhop
-  - name: BeerIbu
-    function: beeribu
-  - name: BeerMalt
-    function: beermalt
-  - name: BeerName
-    function: beername
-  - name: BeerStyle
-    function: beerstyle
-  - name: BeerYeast
-    function: beeryeast
+tasks:
+  - name: beer topic
+    topic:
+      name: test_1
+      batch_msgs: 1
+      batch_count: 100
+      batch_delay_ms: 100
+    fields:
+      - name: BeerAlcohol
+        function: beeralcohol
+      - name: BeerBlg
+        function: beerblg
+      - name: BeerHop
+        function: beerhop
+      - name: BeerIbu
+        function: beeribu
+      - name: BeerMalt
+        function: beermalt
+      - name: BeerName
+        function: beername
+      - name: BeerStyle
+        function: beerstyle
+      - name: BeerYeast
+        function: beeryeast

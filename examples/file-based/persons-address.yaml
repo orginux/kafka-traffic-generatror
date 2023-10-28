@@ -1,53 +1,55 @@
 ---
 kafka:
   host: "localhost:9092"
-topic:
-  name: topic1
-  batch_msgs: 10
-  batch_count: 5
-  batch_delay_ms: 2000
-fields:
-  - name: PersonInfo
-    function: person
-  - name: Name
-    function: name
-  - name: FirstName
-    function: firstname
-  - name: MiddleName
-    function: middlename
-  - name: LastName
-    function: lastname
-  - name: Gender
-    function: gender
-  - name: SSN
-    function: ssn
-  - name: Email
-    function: email
-  - name: Phone
-    function: phone
-  - name: AddressInfo
-    function: address
-  - name: City
-    function: city
-  - name: Country
-    function: country
-  - name: CountryAbr
-    function: countryabr
-  - name: State
-    function: state
-  - name: StateAbr
-    function: stateabr
-  - name: StreetName
-    function: streetname
-  - name: StreetNumber
-    function: streetnumber
-  - name: StreetPrefix
-    function: streetprefix
-  - name: StreetSuffix
-    function: streetsuffix
-  - name: Zip
-    function: zip
-  - name: Latitude
-    function: latitude
-  - name: Longitude
-    function: longitude
+tasks:
+  - name: persons
+    topic:
+      name: topic1
+      batch_msgs: 10
+      batch_count: 5
+      batch_delay_ms: 2000
+    fields:
+      - name: PersonInfo
+        function: person
+      - name: Name
+        function: name
+      - name: FirstName
+        function: firstname
+      - name: MiddleName
+        function: middlename
+      - name: LastName
+        function: lastname
+      - name: Gender
+        function: gender
+      - name: SSN
+        function: ssn
+      - name: Email
+        function: email
+      - name: Phone
+        function: phone
+      - name: AddressInfo
+        function: address
+      - name: City
+        function: city
+      - name: Country
+        function: country
+      - name: CountryAbr
+        function: countryabr
+      - name: State
+        function: state
+      - name: StateAbr
+        function: stateabr
+      - name: StreetName
+        function: streetname
+      - name: StreetNumber
+        function: streetnumber
+      - name: StreetPrefix
+        function: streetprefix
+      - name: StreetSuffix
+        function: streetsuffix
+      - name: Zip
+        function: zip
+      - name: Latitude
+        function: latitude
+      - name: Longitude
+        function: longitude

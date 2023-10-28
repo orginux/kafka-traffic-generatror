@@ -1,17 +1,19 @@
 ---
 kafka:
   host: "localhost:9092"
-topic:
-  name: topic1
-  batch_msgs: 1
-  batch_count: 10
-  batch_delay_ms: 1000
-fields:
-  - name: BookInfo
-    function: book
-  - name: BookTitle
-    function: booktitle
-  - name: BookAuthor
-    function: bookauthor
-  - name: BookGenre
-    function: bookgenre
+tasks:
+  - name: books
+    topic:
+      name: topic1
+      batch_msgs: 1
+      batch_count: 10
+      batch_delay_ms: 1000
+    fields:
+      - name: BookInfo
+        function: book
+      - name: BookTitle
+        function: booktitle
+      - name: BookAuthor
+        function: bookauthor
+      - name: BookGenre
+        function: bookgenre
