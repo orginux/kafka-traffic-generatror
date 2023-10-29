@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"kafka-traffic-generator/internal/config"
+	"kafka-traffic-generator/internal/sender"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
@@ -51,7 +52,6 @@ func init() {
 func main() {
 	logger := setupLogger(logLevel)
 	logger.Info("Starting kafka-traffic-generator")
-
 	config, err := config.Load(singelModeConfig)
 	if err != nil {
 		logger.Error("Failed to load configuration", err)
@@ -63,8 +63,9 @@ func main() {
 		logger.Info("Starting the API server", slog.Int("port", config.API.Port))
 	case len(config.Tasks) > 0:
 		logger.Info("Generating fake data for provided tasks")
+		sender.ProduceTraffic(config)
 	default:
-		logger.Error("No configuration provided; exiting with an error")
+		logger.Error("The port is not specified and the task list is empty")
 		os.Exit(1)
 	}
 }

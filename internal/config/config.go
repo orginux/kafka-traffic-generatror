@@ -47,16 +47,14 @@ type Config struct {
 	Tasks []Task `yaml:"tasks"`
 }
 
-var (
-	AppConfig Config
-)
-
 const (
 	envConfigPath = "KTG_CONFIG"
 )
 
 // Load loads the configuration from a YAML file.
 func Load(configPath string) (*Config, error) {
+	var appConfig Config
+
 	// Check if a configuration path is provided; otherwise, fetch from environment variable.
 	if configPath == "" {
 		fmt.Println("Configuration not provided via flag, checking environment variables")
@@ -75,9 +73,9 @@ func Load(configPath string) (*Config, error) {
 	}
 
 	// Read and parse the configuration.
-	if err := cleanenv.ReadConfig(configPath, &AppConfig); err != nil {
+	if err := cleanenv.ReadConfig(configPath, &appConfig); err != nil {
 		return nil, err
 	}
 
-	return &AppConfig, nil
+	return &appConfig, nil
 }
