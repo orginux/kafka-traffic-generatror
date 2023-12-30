@@ -29,7 +29,7 @@ func Run(config config.Config, logger *slog.Logger) error {
 	}
 
 	// Generate and send batches of messages
-	var batchNum int
+	var batchNum = 1 // start from 1, otherwise when batchNum=1 will be sent 2 batches
 	for batchNum <= config.Topic.NumBatch {
 		logger.Info("Batch statistics", slog.Int("batch number", batchNum))
 		batch, err := generateBatch(config.Topic.NumMsgs, fields, logger)
