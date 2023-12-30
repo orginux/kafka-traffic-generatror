@@ -102,7 +102,7 @@ The program will load the configuration, generate the specified number of messag
 A Docker image is available for easy deployment of the Kafka Traffic Generator.
 To use the Docker image, you can pull it by running the following command:
 ```bash
-docker pull ghcr.io/orginux/kafka-traffic-generator:latest
+docker pull ghcr.io/orginux/kafka-traffic-generator:0.1.128
 ```
 
 Once you have the image, you can run the Kafka Traffic Generator using Docker Compose.
@@ -110,7 +110,7 @@ Here's an example configuration for running the tool:
 ```yaml
 services:
   ktg:
-    image: ghcr.io/orginux/kafka-traffic-generator:latest
+    image: ghcr.io/orginux/kafka-traffic-generator:0.1.128
     container_name: ktg
     networks:
       - kafka-network
