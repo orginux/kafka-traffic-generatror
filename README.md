@@ -131,7 +131,7 @@ services:
 
 # ToDo:
 - [ ] Implement Kafka Authentication: Enhance security by adding Kafka authentication mechanisms;
-- [ ] Improve Logging: Consider using log/slog, to provide better logging capabilities, structured logs, and log levels;
+- [+] Improve Logging: Consider using log/slog, to provide better logging capabilities, structured logs, and log levels;
 - [ ] Implement API: Develop an API for better control and management of the Kafka Traffic Generator;
 - [ ] Multi-Topic Support: Extend the generator to support working with multiple Kafka topics simultaneously;
 
