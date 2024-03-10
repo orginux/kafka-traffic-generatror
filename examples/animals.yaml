@@ -1,6 +1,7 @@
 ---
 kafka:
   host: "localhost:9092"
+loglevel: "debug"
 topic:
   name: topic1
   batch_msgs: 1

@@ -31,8 +31,9 @@ func main() {
 	logger.Info("Starting kafka-traffic-generator")
 
 	// Run the Kafka traffic generator with the provided configuration
-	if err = generator.Run(*config, logger); err != nil {
-		logger.Error("Failed to run generator", sl.Err(err))
+	generator := generator.New(config, logger)
+	if err = generator.Run(); err != nil {
+		logger.Error("Failed to run kafka-traffic-generator", sl.Err(err))
 	}
 	logger.Info("Stopping kafka-traffic-generator")
 }
