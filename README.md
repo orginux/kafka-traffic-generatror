@@ -4,15 +4,21 @@ This tool generates and sends batches of messages to a Kafka topic using randoml
 Messages are generated in `<key:int><valuse:json>` format, you can define fields in a config file.
 
 # Usage
-```bash
 Usage of kafka-traffic-generator:
+```bash
 Environment variables:
+  KTG_BATCHDELAY int
+        Delay between batches in milliseconds (default "0")
   KTG_BATCHNUM int
         Number of batches (0 - unlimited) (default "0")
-  KTG_DELAY int
-        Delay between batches in milliseconds (default "1000")
+  KTG_CA_PATH string
+        Path to the CA certificate
+  KTG_CERT_PATH string
+        Path to the client certificate
   KTG_KAFKA string
         Kafka host address (default "localhost:9092")
+  KTG_KEY_PATH string
+        Path to the client key
   KTG_LOGLEVEL string
         Logging level: debug, information, warning, error (default "information")
   KTG_MSGNUM int
@@ -20,8 +26,8 @@ Environment variables:
   KTG_TOPIC string
         Kafka topic name
 Flags:
-  --config string
-        Config file path
+  -config string
+        Path to the configuration file
 ```
 
 ## Binary file
