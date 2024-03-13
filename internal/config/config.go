@@ -20,14 +20,39 @@ type Config struct {
 // Kafka defines the Kafka-related configuration settings.
 type Kafka struct {
 	Host string `yaml:"host" env:"KTG_KAFKA" env-description:"Kafka host address" env-default:"localhost:9092"`
+	TLS  KafkaCerts
+}
+
+// Kafka TLS
+type KafkaCerts struct {
+	CaPath   string `yaml:"ca_path" env:"KTG_CA_PATH" env-description:"Path to the CA certificate"`
+	CertPath string `yaml:"cert_path" env:"KTG_CERT_PATH" env-description:"Path to the client certificate"`
+	KeyPath  string `yaml:"key_path" env:"KTG_KEY_PATH" env-description:"Path to the client key"`
+}
+
+// Read certicates from files
+func (kc *KafkaCerts) Read() (caCert, clientCert, clientKey []byte, err error) {
+	caCert, err = os.ReadFile(kc.CaPath)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to read CA certificate: %w", err)
+	}
+	clientCert, err = os.ReadFile(kc.CertPath)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to read client certificate: %w", err)
+	}
+	clientKey, err = os.ReadFile(kc.KeyPath)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to read client key: %w", err)
+	}
+	return caCert, clientCert, clientKey, nil
 }
 
 // Topic defines the structure of a Kafka topic
 type Topic struct {
-	Name     string `yaml:"name" env:"KTG_TOPIC" env-description:"Kafka topic name" env-required:"true"`
-	NumMsgs  int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-description:"Number of messages per batch" env-default:"100" env-upd:"true"`
-	NumBatch int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches (0 - unlimited)" env-default:"0" env-upd:"true"`
-	MsgDelay int    `yaml:"batch_delay_ms" env:"KTG_DELAY" env-description:"Delay between batches in milliseconds" env-default:"1000" env-upd:"true"`
+	Name       string `yaml:"name" env:"KTG_TOPIC" env-description:"Kafka topic name" env-required:"true"`
+	NumMsgs    int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-description:"Number of messages per batch" env-default:"100" env-upd:"true"`
+	NumBatch   int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches (0 - unlimited)" env-default:"0" env-upd:"true"`
+	BatchDelay int    `yaml:"batch_delay_ms" env:"KTG_BATCHDELAY" env-description:"Delay between batches in milliseconds" env-default:"0" env-upd:"true"`
 }
 
 // Field defines the structure of a field configuration for generating fake data.

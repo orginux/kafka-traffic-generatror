@@ -4,15 +4,21 @@ This tool generates and sends batches of messages to a Kafka topic using randoml
 Messages are generated in `<key:int><valuse:json>` format, you can define fields in a config file.
 
 # Usage
-```bash
 Usage of kafka-traffic-generator:
+```bash
 Environment variables:
+  KTG_BATCHDELAY int
+        Delay between batches in milliseconds (default "0")
   KTG_BATCHNUM int
         Number of batches (0 - unlimited) (default "0")
-  KTG_DELAY int
-        Delay between batches in milliseconds (default "1000")
+  KTG_CA_PATH string
+        Path to the CA certificate
+  KTG_CERT_PATH string
+        Path to the client certificate
   KTG_KAFKA string
         Kafka host address (default "localhost:9092")
+  KTG_KEY_PATH string
+        Path to the client key
   KTG_LOGLEVEL string
         Logging level: debug, information, warning, error (default "information")
   KTG_MSGNUM int
@@ -20,8 +26,8 @@ Environment variables:
   KTG_TOPIC string
         Kafka topic name
 Flags:
-  --config string
-        Config file path
+  -config string
+        Path to the configuration file
 ```
 
 ## Binary file
@@ -130,10 +136,16 @@ services:
 ```
 
 # ToDo:
-- [ ] Implement Kafka Authentication: Enhance security by adding Kafka authentication mechanisms;
-- [+] Improve Logging: Consider using log/slog, to provide better logging capabilities, structured logs, and log levels;
+- [x] Implement Kafka Authentication: Enhance security by adding Kafka authentication mechanisms;
+- [x] Improve Logging: Consider using log/slog, to provide better logging capabilities, structured logs, and log levels;
+- [x] Add CI/CD: Implement a CI/CD pipeline to automate the build and deployment process;
+- [ ] Add exmples for usage shufflestrings;
+- [ ] Compression: https://github.com/segmentio/kafka-go/blob/b2b17ac6021f0cc12ff5c4e57e155f141a2fabd4/compression.go#L11 ;
+- [ ] Acks: https://github.com/segmentio/kafka-go/blob/b2b17ac6021f0cc12ff5c4e57e155f141a2fabd4/writer.go#L310 ;
+- [ ] Implement multithreaded generator;
 - [ ] Implement API: Develop an API for better control and management of the Kafka Traffic Generator;
 - [ ] Multi-Topic Support: Extend the generator to support working with multiple Kafka topics simultaneously;
+- [ ] Add Tests: Write unit tests to ensure the stability and reliability of the Kafka Traffic Generator;
 
 # Dependencies
 This project uses the following Go libraries:
