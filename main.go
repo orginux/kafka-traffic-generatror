@@ -14,7 +14,7 @@ const (
 	//  Logging levels:
 	// debug, information (default), warning, error.
 	logLevelDebug   = "debug"
-	logLevelWarning = "warning"
+	logLevelWarning = "warn"
 	logLevelError   = "err"
 )
 

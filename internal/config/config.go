@@ -15,7 +15,7 @@ type Config struct {
 	Kafka    Kafka   `yaml:"kafka"`
 	Topic    Topic   `yaml:"topic"`
 	Fields   []Field `yaml:"fields"`
-	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level: debug, information, warning, error"`
+	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level [debug, info, warn, error]"`
 }
 
 // Kafka defines the Kafka-related configuration settings.
