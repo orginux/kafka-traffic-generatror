@@ -119,13 +119,20 @@ func (mg *MessageGenerator) sendBatch(batch []kafka.Message) error {
 		TLS: mg.caCertPool(),
 	}
 
+	acks, err := mg.Config.Kafka.ParseAcks()
+	if err != nil {
+		return fmt.Errorf("failed to set up Kafka acks %s: %v", mg.Config.Kafka.Acks, err)
+	}
+
+	mg.Logger.Info("Acks configuration", slog.String("acks", acks.String()))
+
 	conn := kafka.Writer{
 		Addr:         kafka.TCP(mg.Config.Kafka.Host),
 		Topic:        mg.Config.Topic.Name,
 		Transport:    transport,
 		Compression:  compress.Gzip,
 		Async:        true,
-		RequiredAcks: kafka.RequireNone,
+		RequiredAcks: acks,
 	}
 
 	if err := conn.WriteMessages(context.Background(), batch...); err != nil {

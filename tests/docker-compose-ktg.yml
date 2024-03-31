@@ -20,6 +20,7 @@ services:
       KTG_DELAY: 500
       KTG_BATCHNUM: 5
       KTG_LOGLEVEL: debug
+      KTG_ACKS: all
 
 networks:
   kafka-network:
