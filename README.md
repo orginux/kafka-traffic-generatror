@@ -141,8 +141,9 @@ services:
 - [x] Add CI/CD: Implement a CI/CD pipeline to automate the build and deployment process;
 - [ ] Add exmples for usage shufflestrings;
 - [ ] Compression: https://github.com/segmentio/kafka-go/blob/b2b17ac6021f0cc12ff5c4e57e155f141a2fabd4/compression.go#L11 ;
-- [ ] Acks: https://github.com/segmentio/kafka-go/blob/b2b17ac6021f0cc12ff5c4e57e155f141a2fabd4/writer.go#L310 ;
+- [x] Acks setting
 - [ ] Implement multithreaded generator;
+- [ ] Show final statistics after sending all messages or stop by signal;
 - [ ] Implement API: Develop an API for better control and management of the Kafka Traffic Generator;
 - [ ] Multi-Topic Support: Extend the generator to support working with multiple Kafka topics simultaneously;
 - [ ] Add Tests: Write unit tests to ensure the stability and reliability of the Kafka Traffic Generator;

@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/segmentio/kafka-go"
 )
 
 // Config defines the overall configuration structure.
@@ -14,13 +15,35 @@ type Config struct {
 	Kafka    Kafka   `yaml:"kafka"`
 	Topic    Topic   `yaml:"topic"`
 	Fields   []Field `yaml:"fields"`
-	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level: debug, information, warning, error" env-default:"information"`
+	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level [debug, info, warn, error]"`
 }
 
 // Kafka defines the Kafka-related configuration settings.
 type Kafka struct {
 	Host string `yaml:"host" env:"KTG_KAFKA" env-description:"Kafka host address" env-default:"localhost:9092"`
+	Acks string `yaml:"acks" env:"KTG_ACKS" env-description:"Kafka acks setting [all, one, none]" env-default:"none"`
 	TLS  KafkaCerts
+}
+
+// Kafka acks settings, available options
+const (
+	kafkaAcksAll  = "all"
+	kafkaAcksOne  = "one"
+	kafkaAcksNone = "none"
+)
+
+// ParseAcks parses the acks configuration setting
+func (k *Kafka) ParseAcks() (kafka.RequiredAcks, error) {
+	switch k.Acks {
+	case kafkaAcksAll:
+		return kafka.RequireAll, nil
+	case kafkaAcksOne:
+		return kafka.RequireOne, nil
+	case kafkaAcksNone:
+		return kafka.RequireNone, nil
+	default:
+		return kafka.RequireNone, fmt.Errorf("invalid acks configuration")
+	}
 }
 
 // Kafka TLS
