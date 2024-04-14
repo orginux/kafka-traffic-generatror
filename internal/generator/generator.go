@@ -17,7 +17,6 @@ import (
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/segmentio/kafka-go"
-	"github.com/segmentio/kafka-go/compress"
 )
 
 // MessageGenerator encapsulates the generation and sending of Kafka messages.
@@ -126,11 +125,10 @@ func (mg *MessageGenerator) sendBatch(batch []kafka.Message) error {
 
 	mg.Logger.Info("Acks configuration", slog.String("acks", acks.String()))
 
-	compressionType, err := compress.ParseCompressionCodec(mg.Config.Kafka.Compression)
+	compressionType, err := mg.Config.Kafka.ParseCompression()
 	if err != nil {
-		return fmt.Errorf("failed to set up Kafka compression %s: %v", mg.Config.Kafka.Compression, err)
+		return fmt.Errorf("failed to set up Kafka compression")
 	}
-
 	mg.Logger.Info("Compression configuration", slog.String("compression", compressionType.String()))
 
 	conn := kafka.Writer{

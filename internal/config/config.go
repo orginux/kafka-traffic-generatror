@@ -56,20 +56,18 @@ const (
 )
 
 // ParseCompression parses the compression configuration setting
-func (k *Kafka) ParseCompressionCodec() (kafka.CompressionCodec, error) {
+func (k *Kafka) ParseCompression() (kafka.Compression, error) {
 	switch k.Compression {
-	case kafkaCompressionNone:
-		return nil, nil
 	case kafkaCompressionGzip:
-		return kafka.Gzip.Codec(), nil
+		return kafka.Gzip, nil
 	case kafkaCompressionSnappy:
-		return kafka.Snappy.Codec(), nil
+		return kafka.Snappy, nil
 	case kafkaCompressionLz4:
-		return kafka.Lz4.Codec(), nil
+		return kafka.Lz4, nil
 	case kafkaCompressionZstd:
-		return kafka.Zstd.Codec(), nil
+		return kafka.Zstd, nil
 	default:
-		return nil, fmt.Errorf("invalid compression configuration")
+		return kafka.Compression(0), nil
 	}
 }
 
