@@ -58,6 +58,8 @@ const (
 // ParseCompression parses the compression configuration setting
 func (k *Kafka) ParseCompression() (kafka.Compression, error) {
 	switch k.Compression {
+	case "":
+		return kafka.Compression(0), nil
 	case kafkaCompressionGzip:
 		return kafka.Gzip, nil
 	case kafkaCompressionSnappy:
@@ -67,7 +69,7 @@ func (k *Kafka) ParseCompression() (kafka.Compression, error) {
 	case kafkaCompressionZstd:
 		return kafka.Zstd, nil
 	default:
-		return kafka.Compression(0), nil
+		return kafka.Compression(0), fmt.Errorf("invalid compression configuration")
 	}
 }
 
