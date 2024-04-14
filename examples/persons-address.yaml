@@ -3,7 +3,7 @@ kafka:
   host: "localhost:9092"
   acks: one
   compression: gzip
-loglevel: debug
+loglevel: warn
 topic:
   name: topic1
   batch_msgs: 10

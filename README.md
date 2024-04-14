@@ -7,6 +7,8 @@ Messages are generated in `<key:int><valuse:json>` format, you can define fields
 Usage of kafka-traffic-generator:
 ```bash
 Environment variables:
+  KTG_ACKS string
+        Kafka acks setting [all, one, none] (default "none")
   KTG_BATCHDELAY int
         Delay between batches in milliseconds (default "0")
   KTG_BATCHNUM int
@@ -15,19 +17,18 @@ Environment variables:
         Path to the CA certificate
   KTG_CERT_PATH string
         Path to the client certificate
+  KTG_COMPRESSION string
+        Kafka compression setting [none, gzip, snappy, lz4, zstd] (default "none")
   KTG_KAFKA string
         Kafka host address (default "localhost:9092")
   KTG_KEY_PATH string
         Path to the client key
   KTG_LOGLEVEL string
-        Logging level: debug, information, warning, error (default "information")
+        Logging level [debug, info, warn, error]
   KTG_MSGNUM int
         Number of messages per batch (default "100")
   KTG_TOPIC string
         Kafka topic name
-Flags:
-  -config string
-        Path to the configuration file
 ```
 
 ## Binary file
@@ -40,6 +41,8 @@ make build
 ```yaml
 kafka:
   host: <KAFKA_BROKER_HOST>
+  acks: [all, one, none] ("none" by default)
+  compression: [gzip, snappy, lz4, zstd] ("none" by default)
 loglevel: [debug, information, warning, error]
 topic:
   name: <TOPIC_NAME>
@@ -67,6 +70,8 @@ Example of generating email sending events in a specific time period:
 ---
 kafka:
   host: "kafka:9092"
+  acks: one
+  compression: gzip
 topic:
   name: emails
   batch_msgs: 50
@@ -128,6 +133,8 @@ services:
     environment:
       KTG_CONFIG: /etc/ktg/test_1.yaml
       KTG_KAFKA: "kafka:29092"
+      KTG_ACKS: all
+      KTG_COMPRESSION: gzip
       KTG_TOPIC: topic1
       KTG_MSGNUM: 10
       KTG_DELAY: 500

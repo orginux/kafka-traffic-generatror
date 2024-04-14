@@ -1,6 +1,8 @@
 ---
 kafka:
   host: "localhost:9092"
+  acks: one
+  compression: lz4
 topic:
   name: topic1
   batch_msgs: 1
