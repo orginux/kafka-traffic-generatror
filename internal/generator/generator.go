@@ -126,11 +126,18 @@ func (mg *MessageGenerator) sendBatch(batch []kafka.Message) error {
 
 	mg.Logger.Info("Acks configuration", slog.String("acks", acks.String()))
 
+	compressionType, err := compress.ParseCompressionCodec(mg.Config.Kafka.Compression)
+	if err != nil {
+		return fmt.Errorf("failed to set up Kafka compression %s: %v", mg.Config.Kafka.Compression, err)
+	}
+
+	mg.Logger.Info("Compression configuration", slog.String("compression", compressionType.String()))
+
 	conn := kafka.Writer{
 		Addr:         kafka.TCP(mg.Config.Kafka.Host),
 		Topic:        mg.Config.Topic.Name,
 		Transport:    transport,
-		Compression:  compress.Gzip,
+		Compression:  compressionType,
 		Async:        true,
 		RequiredAcks: acks,
 	}
