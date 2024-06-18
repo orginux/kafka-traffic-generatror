@@ -20,9 +20,10 @@ type Config struct {
 
 // Kafka defines the Kafka-related configuration settings.
 type Kafka struct {
-	Host string `yaml:"host" env:"KTG_KAFKA" env-description:"Kafka host address" env-default:"localhost:9092"`
-	Acks string `yaml:"acks" env:"KTG_ACKS" env-description:"Kafka acks setting [all, one, none]" env-default:"none"`
-	TLS  KafkaCerts
+	Host        string `yaml:"host" env:"KTG_KAFKA" env-description:"Kafka host address" env-default:"localhost:9092"`
+	Acks        string `yaml:"acks" env:"KTG_ACKS" env-description:"Kafka acks setting [all, one, none]" env-default:"none"`
+	Compression string `yaml:"compression" env:"KTG_COMPRESSION" env-description:"Kafka compression setting [none, gzip, snappy, lz4, zstd]" env-default:"none"`
+	TLS         KafkaCerts
 }
 
 // Kafka acks settings, available options
@@ -43,6 +44,32 @@ func (k *Kafka) ParseAcks() (kafka.RequiredAcks, error) {
 		return kafka.RequireNone, nil
 	default:
 		return kafka.RequireNone, fmt.Errorf("invalid acks configuration")
+	}
+}
+
+const (
+	kafkaCompressionNone   = "none"
+	kafkaCompressionGzip   = "gzip"
+	kafkaCompressionSnappy = "snappy"
+	kafkaCompressionLz4    = "lz4"
+	kafkaCompressionZstd   = "zstd"
+)
+
+// ParseCompression parses the compression configuration setting
+func (k *Kafka) ParseCompression() (kafka.Compression, error) {
+	switch k.Compression {
+	case "":
+		return kafka.Compression(0), nil
+	case kafkaCompressionGzip:
+		return kafka.Gzip, nil
+	case kafkaCompressionSnappy:
+		return kafka.Snappy, nil
+	case kafkaCompressionLz4:
+		return kafka.Lz4, nil
+	case kafkaCompressionZstd:
+		return kafka.Zstd, nil
+	default:
+		return kafka.Compression(0), fmt.Errorf("invalid compression configuration")
 	}
 }
 

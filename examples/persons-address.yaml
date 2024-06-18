@@ -2,12 +2,13 @@
 kafka:
   host: "localhost:9092"
   acks: one
+  compression: gzip
+loglevel: warn
 topic:
   name: topic1
   batch_msgs: 10
   batch_count: 5
   batch_delay_ms: 2000
-loglevel: warn
 fields:
   - name: PersonInfo
     function: person
