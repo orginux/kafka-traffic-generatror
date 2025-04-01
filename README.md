@@ -1,7 +1,7 @@
 # Kafka Traffic Generator
 
 This tool generates and sends batches of messages to a Kafka topic using randomly generated data.
-Messages are generated in `<key:int><valuse:json>` format, you can define fields in a config file.
+Messages are generated in `<key:int><value:json>` format, you can define fields in a config file.
 
 # Usage
 Usage of kafka-traffic-generator:
