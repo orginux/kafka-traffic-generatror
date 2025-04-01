@@ -101,7 +101,7 @@ Additional examples located within the `./examples` folder, and a comprehensive 
 The program will load the configuration, generate the specified number of messages with random data, and send them to the Kafka topic.
 
 #### 4. After that you can see the messages in your Kafka topic:
-```json
+```json lines
 {"Date":"1993-04-02 17:44:04","Email":"tedvon@carroll.biz","Message":"You with nobody Gabonese my."}
 {"Date":"1993-04-20 02:18:18","Email":"ethylmcclure@goldner.info","Message":"By such where deeply so."}
 {"Date":"1993-05-08 01:07:46","Email":"betsyoreilly@welch.info","Message":"Firstly of as board she."}
