@@ -91,7 +91,7 @@ fields:
     function: sentence
     params: {}
 ```
-Additional examples located within the `./examples` folder, and a comprehensive list of functions is available in the [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
+Additional examples located within the `./examples` folder, and a comprehensive list of functions is available in [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
 
 #### 3. Run the program with the path to the configuration file:
 
