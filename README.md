@@ -1,7 +1,7 @@
 # Kafka Traffic Generator
 
 This tool generates and sends batches of messages to a Kafka topic using randomly generated data.
-Messages are generated in `<key:int><valuse:json>` format, you can define fields in a config file.
+Messages are generated in `<key:int><value:json>` format, you can define fields in a config file.
 
 # Usage
 Usage of kafka-traffic-generator:
@@ -91,7 +91,7 @@ fields:
     function: sentence
     params: {}
 ```
-Additional examples located within the `./examples` folder, and a comprehensive list of functions is available in the [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
+Additional examples located within the `./examples` folder, and a comprehensive list of functions is available in [the gofakeit project](https://github.com/brianvoe/gofakeit#functions).
 
 #### 3. Run the program with the path to the configuration file:
 
@@ -101,7 +101,7 @@ Additional examples located within the `./examples` folder, and a comprehensive 
 The program will load the configuration, generate the specified number of messages with random data, and send them to the Kafka topic.
 
 #### 4. After that you can see the messages in your Kafka topic:
-```json
+```json lines
 {"Date":"1993-04-02 17:44:04","Email":"tedvon@carroll.biz","Message":"You with nobody Gabonese my."}
 {"Date":"1993-04-20 02:18:18","Email":"ethylmcclure@goldner.info","Message":"By such where deeply so."}
 {"Date":"1993-05-08 01:07:46","Email":"betsyoreilly@welch.info","Message":"Firstly of as board she."}
