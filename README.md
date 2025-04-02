@@ -144,10 +144,11 @@ services:
 
 # ToDo:
 - [x] Implement Kafka Authentication: Enhance security by adding Kafka authentication mechanisms;
-- [x] Improve Logging: Consider using log/slog, to provide better logging capabilities, structured logs, and log levels;
+- [x] Improve Logging: Consider using log/slog to provide better logging capabilities, structured logs, and log levels;
 - [x] Add CI/CD: Implement a CI/CD pipeline to automate the build and deployment process;
-- [ ] Add exmples for usage shufflestrings;
-- [ ] Compression: https://github.com/segmentio/kafka-go/blob/b2b17ac6021f0cc12ff5c4e57e155f141a2fabd4/compression.go#L11 ;
+- [ ] Generate more complex data with dependencies between fields;
+- [ ] Add examples for usage shufflestrings;
+- [x] Compression;
 - [x] Acks setting
 - [ ] Implement multithreaded generator;
 - [ ] Show final statistics after sending all messages or stop by signal;
