@@ -1,6 +1,4 @@
 ---
-version: '3.7'
-
 services:
   ktg:
     image: ghcr.io/orginux/kafka-traffic-generatror:latest
@@ -19,8 +17,8 @@ services:
       KTG_ACKS: one
       KTG_COMPRESSION: gzip
       KTG_MSGNUM: 5
-      KTG_DELAY: 500
-      KTG_BATCHNUM: 5
+      KTG_DELAY: 10000
+      KTG_BATCHNUM: 0
       KTG_LOGLEVEL: debug
 
 networks:

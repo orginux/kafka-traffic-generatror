@@ -1,6 +1,4 @@
 ---
-version: '3.7'
-
 services:
   zookeeper:
     image: zookeeper:3.8.1
@@ -12,7 +10,7 @@ services:
       - kafka-network
 
   kafka:
-    image: confluentinc/cp-kafka:7.0.9
+    image: confluentinc/cp-kafka:7.8.0
     container_name: kafka
     ports:
       - "9092:9092"
