@@ -15,7 +15,7 @@ import (
 
 	"kafka-traffic-generator/internal/config"
 
-	"github.com/brianvoe/gofakeit/v6"
+	"github.com/brianvoe/gofakeit/v7"
 	"github.com/segmentio/kafka-go"
 )
 

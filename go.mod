@@ -3,7 +3,7 @@ module kafka-traffic-generator
 go 1.22
 
 require (
-	github.com/brianvoe/gofakeit/v6 v6.28.0
+	github.com/brianvoe/gofakeit/v7 v7.2.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/segmentio/kafka-go v0.4.47
 )
