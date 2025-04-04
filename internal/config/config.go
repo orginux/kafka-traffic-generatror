@@ -121,26 +121,17 @@ var (
 	config     Config
 )
 
-// init initializes the command-line flags.
 func init() {
 	// Set up a command-line flag for specifying the configuration file path.
 	flag.StringVar(&configPath, "config", "", "Path to the configuration file")
-
-	// Create a flag set using the `flag` package.
-	fset := flag.NewFlagSet("Environment variables", flag.ContinueOnError)
-
-	// Configure the flag set usage with cleanenv's wrapped flag usage.
-	fset.Usage = cleanenv.FUsage(fset.Output(), &config, nil, fset.Usage)
-
-	// Parse the command-line arguments.
-	_ = fset.Parse(os.Args[1:])
-
-	// Parse any remaining flags.
-	flag.Parse()
 }
 
-// Load loads the configuration from a YAML file.
 func Load() (*Config, error) {
+	// Parse the command-line arguments if they haven't been parsed yet
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+
 	// Check if a configuration path is provided; otherwise, fetch from environment variable.
 	if configPath == "" {
 		fmt.Println("Configuration not provided via flag, checking environment variables")
