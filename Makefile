@@ -26,9 +26,9 @@ lint:
 
 ## Kafka
 test-topic-create:
-	docker exec kafka kafka-topics --bootstrap-server kafka:9092 --topic topic1 --create --partitions 6 --replication-factor 1
+	docker exec kafka kafka-topics --bootstrap-server kafka:29092 --topic topic1 --create --partitions 6 --replication-factor 1
 test-topic-check:
-	docker exec kafka kafka-topics --bootstrap-server kafka:9092 --describe topic1
+	docker exec kafka kafka-topics --bootstrap-server kafka:29092 --describe topic1
 test-topic-consumer:
 	docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --from-beginning --topic topic1
 test-topic-lag:

@@ -6,6 +6,10 @@ Messages are generated in `<key:int><value:json>` format, you can define fields 
 # Usage
 Usage of kafka-traffic-generator:
 ```bash
+Flags:
+  --config string
+        Path to the configuration file
+
 Environment variables:
   KTG_ACKS string
         Kafka acks setting [all, one, none] (default "none")
@@ -19,12 +23,14 @@ Environment variables:
         Path to the client certificate
   KTG_COMPRESSION string
         Kafka compression setting [none, gzip, snappy, lz4, zstd] (default "none")
+  KTG_CONFIG string
+        Path to the configuration file
   KTG_KAFKA string
         Kafka host address (default "localhost:9092")
   KTG_KEY_PATH string
         Path to the client key
   KTG_LOGLEVEL string
-        Logging level [debug, info, warn, error]
+        Logging level [debug, warn, err]
   KTG_MSGNUM int
         Number of messages per batch (default "100")
   KTG_TOPIC string
@@ -43,7 +49,7 @@ kafka:
   host: <KAFKA_BROKER_HOST>
   acks: [all, one, none] ("none" by default)
   compression: [gzip, snappy, lz4, zstd] ("none" by default)
-loglevel: [debug, information, warning, error]
+loglevel: [debug, warn, err]
 topic:
   name: <TOPIC_NAME>
   batch_msgs: Positive integer
@@ -113,7 +119,7 @@ The program will load the configuration, generate the specified number of messag
 A Docker image is available for easy deployment of the Kafka Traffic Generator.
 To use the Docker image, you can pull it by running the following command:
 ```bash
-docker pull ghcr.io/orginux/kafka-traffic-generator:0.1.128
+docker pull ghcr.io/orginux/kafka-traffic-generator:0.3.167
 ```
 
 Once you have the image, you can run the Kafka Traffic Generator using Docker Compose.
@@ -121,7 +127,7 @@ Here's an example configuration for running the tool:
 ```yaml
 services:
   ktg:
-    image: ghcr.io/orginux/kafka-traffic-generator:0.1.128
+    image: ghcr.io/orginux/kafka-traffic-generator:0.3.167
     container_name: ktg
     networks:
       - kafka-network
@@ -137,7 +143,7 @@ services:
       KTG_COMPRESSION: gzip
       KTG_TOPIC: topic1
       KTG_MSGNUM: 10
-      KTG_DELAY: 500
+      KTG_BATCHDELAY: 500
       KTG_BATCHNUM: 5
       KTG_LOGLEVEL: debug
 ```
