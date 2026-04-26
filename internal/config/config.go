@@ -4,7 +4,9 @@ package config
 import (
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/segmentio/kafka-go"
@@ -12,10 +14,11 @@ import (
 
 // Config defines the overall configuration structure.
 type Config struct {
-	Kafka    Kafka   `yaml:"kafka"`
-	Topic    Topic   `yaml:"topic"`
-	Fields   []Field `yaml:"fields"`
-	LogLevel string  `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level [debug, info, warn, error]"`
+	Kafka    Kafka    `yaml:"kafka"`
+	Topic    Topic    `yaml:"topic"`
+	Entities []Entity `yaml:"entities"`
+	Fields   []Field  `yaml:"fields"`
+	LogLevel string   `yaml:"loglevel" env:"KTG_LOGLEVEL" env-description:"Logging level [debug, info, warn, error]"`
 }
 
 // Kafka defines the Kafka-related configuration settings.
@@ -97,12 +100,56 @@ func (kc *KafkaCerts) Read() (caCert, clientCert, clientKey []byte, err error) {
 	return caCert, clientCert, clientKey, nil
 }
 
+// Rate defines a messages-per-minute range for the generator.
+type Rate struct {
+	Min int `yaml:"min"`
+	Max int `yaml:"max"`
+}
+
+// WeightedValue pairs a string value with a selection weight.
+type WeightedValue struct {
+	Value  string  `yaml:"value"`
+	Weight float32 `yaml:"weight"`
+}
+
+// Entity is a named pool of pre-generated objects that can be referenced from fields.
+type Entity struct {
+	Name   string  `yaml:"name"`
+	Count  int     `yaml:"count"`
+	Fields []Field `yaml:"fields"`
+}
+
 // Topic defines the structure of a Kafka topic
 type Topic struct {
 	Name       string `yaml:"name" env:"KTG_TOPIC" env-description:"Kafka topic name" env-required:"true"`
 	NumMsgs    int    `yaml:"batch_msgs" env:"KTG_MSGNUM" env-description:"Number of messages per batch" env-default:"100" env-upd:"true"`
 	NumBatch   int    `yaml:"batch_count" env:"KTG_BATCHNUM" env-description:"Number of batches (0 - unlimited)" env-default:"0" env-upd:"true"`
 	BatchDelay int    `yaml:"batch_delay_ms" env:"KTG_BATCHDELAY" env-description:"Delay between batches in milliseconds" env-default:"0" env-upd:"true"`
+	Rate       *Rate  `yaml:"rate"`
+	Duration   string `yaml:"duration"`
+}
+
+// DelayMS returns a random delay in milliseconds within the rate bounds.
+// Falls back to BatchDelay when Rate is not set.
+func (t *Topic) DelayMS() int {
+	if t.Rate == nil || t.Rate.Max <= 0 {
+		return t.BatchDelay
+	}
+	lo := 60_000 / t.Rate.Max
+	hi := 60_000 / t.Rate.Min
+	if lo == hi {
+		return lo
+	}
+	return lo + rand.Intn(hi-lo+1)
+}
+
+// ParseDuration parses the duration string (e.g. "10m", "600s", "1h").
+// Returns zero duration when Duration is empty (fall back to NumBatch).
+func (t *Topic) ParseDuration() (time.Duration, error) {
+	if t.Duration == "" {
+		return 0, nil
+	}
+	return time.ParseDuration(t.Duration)
 }
 
 // Field defines the structure of a field configuration for generating fake data.
@@ -110,6 +157,8 @@ type Field struct {
 	Name     string            `yaml:"name"`
 	Function string            `yaml:"function"`
 	Params   map[string]string `yaml:"params"`
+	Values   []WeightedValue   `yaml:"values"` // used when function == "weighted"
+	Entity   string            `yaml:"entity"` // reference to entities[].name
 }
 
 const (
@@ -121,22 +170,9 @@ var (
 	config     Config
 )
 
-// init initializes the command-line flags.
 func init() {
-	// Set up a command-line flag for specifying the configuration file path.
 	flag.StringVar(&configPath, "config", "", "Path to the configuration file")
-
-	// Create a flag set using the `flag` package.
-	fset := flag.NewFlagSet("Environment variables", flag.ContinueOnError)
-
-	// Configure the flag set usage with cleanenv's wrapped flag usage.
-	fset.Usage = cleanenv.FUsage(fset.Output(), &config, nil, fset.Usage)
-
-	// Parse the command-line arguments.
-	_ = fset.Parse(os.Args[1:])
-
-	// Parse any remaining flags.
-	flag.Parse()
+	flag.Usage = cleanenv.FUsage(flag.CommandLine.Output(), &config, nil, flag.Usage)
 }
 
 // Load loads the configuration from a YAML file.

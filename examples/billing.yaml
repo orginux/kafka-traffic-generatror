@@ -1,0 +1,55 @@
+---
+kafka:
+  host: "localhost:9092"
+  acks: one
+  compression: gzip
+loglevel: info
+
+entities:
+  - name: user
+    count: 50
+    fields:
+      - name: user_id
+        function: uuid
+      - name: user_name
+        function: name
+      - name: user_email
+        function: email
+      - name: user_phone
+        function: phone
+
+topic:
+  name: topic1
+  rate:
+    min: 10
+    max: 15
+  duration: "10m"
+
+fields:
+  - entity: user
+  - name: transaction_id
+    function: uuid
+  - name: transaction_amount
+    function: price
+    params:
+      min: "10"
+      max: "5000"
+  - name: transaction_currency
+    function: currencyshort
+  - name: transaction_date
+    function: daterange
+    params:
+      format: "yyyy-MM-dd HH:mm:ss"
+      startdate: "2024-01-01 00:00:00"
+      enddate:   "2026-04-26 00:00:00"
+  - name: transaction_status
+    function: weighted
+    values:
+      - value: "processed"
+        weight: 60
+      - value: "pending"
+        weight: 20
+      - value: "cancelled"
+        weight: 10
+      - value: "failed"
+        weight: 10

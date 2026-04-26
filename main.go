@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log/slog"
 	"os"
@@ -19,7 +20,8 @@ const (
 )
 
 func main() {
-	// Load the topic description from a YAML file
+	flag.Parse()
+
 	config, err := config.Load()
 	if err != nil {
 		fmt.Println("Failed to load configuration", err)

@@ -30,12 +30,12 @@ test-topic-create:
 test-topic-check:
 	docker exec kafka kafka-topics --bootstrap-server kafka:29092 --describe topic1
 test-topic-consumer:
-	docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --from-beginning --topic topic1
+	docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --from-beginning --topic topic1 | jq
 test-topic-lag:
 	docker exec kafka kafka-consumer-groups --bootstrap-server localhost:9092 --describe --all-groups
 
 ## Generate messages
 test-generate: build
-	./bin/kafka-traffic-generator --config examples/persons-address.yaml
+	./bin/kafka-traffic-generator --config examples/billing.yaml
 test-examples:
 	bash ./tests/scripts/test-examples.sh

@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
@@ -19,13 +20,16 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+// entityPool maps entity name → slice of pre-generated flat field maps.
+type entityPool map[string][]map[string]any
+
 // MessageGenerator encapsulates the generation and sending of Kafka messages.
 type MessageGenerator struct {
 	Config *config.Config
 	Logger *slog.Logger
 }
 
-// NewMessageGenerator creates a new instance of MessageGenerator.
+// New creates a new instance of MessageGenerator.
 func New(cfg *config.Config, logger *slog.Logger) *MessageGenerator {
 	return &MessageGenerator{
 		Config: cfg,
@@ -33,83 +37,198 @@ func New(cfg *config.Config, logger *slog.Logger) *MessageGenerator {
 	}
 }
 
-// Run generates and sends batches of Kafka messages based on the provided configuration.
+// Run generates and sends messages based on the provided configuration.
 func (mg *MessageGenerator) Run() error {
 	mg.Logger.Info("Generator started")
-	fields, err := mg.generateFields()
+
+	pools, err := mg.buildPools()
 	if err != nil {
 		return err
 	}
 
-	for batchNum := 1; batchNum <= mg.Config.Topic.NumBatch || mg.Config.Topic.NumBatch <= 0; batchNum++ {
-		mg.Logger.Info("Sending batch", slog.Int("batch number", batchNum))
+	duration, err := mg.Config.Topic.ParseDuration()
+	if err != nil {
+		return fmt.Errorf("invalid duration %q: %w", mg.Config.Topic.Duration, err)
+	}
 
-		if err := mg.processBatch(fields); err != nil {
+	var deadline time.Time
+	if duration > 0 {
+		deadline = time.Now().Add(duration)
+		mg.Logger.Info("Generator will stop after", slog.String("duration", mg.Config.Topic.Duration))
+	}
+
+	// Legacy batch mode: when neither rate nor duration is set, use NumMsgs batches.
+	if mg.Config.Topic.Rate == nil && duration == 0 {
+		return mg.runBatchMode(pools)
+	}
+
+	for msgNum := 1; mg.shouldContinue(msgNum, deadline); msgNum++ {
+		mg.Logger.Info("Sending message", slog.Int("number", msgNum))
+
+		msg, err := mg.generateMessage(pools)
+		if err != nil {
+			return err
+		}
+		if err := mg.sendBatch([]kafka.Message{msg}); err != nil {
 			return err
 		}
 
-		// Delay between batches
+		delayMS := mg.Config.Topic.DelayMS()
+		if delayMS > 0 {
+			time.Sleep(time.Duration(delayMS) * time.Millisecond)
+		}
+	}
+	return nil
+}
+
+// runBatchMode is the original batch-oriented loop (backward compatible).
+func (mg *MessageGenerator) runBatchMode(pools entityPool) error {
+	for batchNum := 1; batchNum <= mg.Config.Topic.NumBatch || mg.Config.Topic.NumBatch <= 0; batchNum++ {
+		mg.Logger.Info("Sending batch", slog.Int("batch number", batchNum))
+
+		batch, err := mg.generateBatch(pools)
+		if err != nil {
+			return err
+		}
+		if err := mg.sendBatch(batch); err != nil {
+			return err
+		}
+
 		mg.handleBatchDelay(batchNum)
 	}
 	return nil
 }
 
-// generateFields generates a slice of gofakeit.Field based on the provided field configurations.
-func (mg *MessageGenerator) generateFields() ([]gofakeit.Field, error) {
-	if len(mg.Config.Fields) == 0 {
-		return nil, fmt.Errorf("no fields defined in the configuration")
+func (mg *MessageGenerator) shouldContinue(n int, deadline time.Time) bool {
+	if !deadline.IsZero() && time.Now().After(deadline) {
+		return false
 	}
+	if mg.Config.Topic.NumBatch > 0 && n > mg.Config.Topic.NumBatch {
+		return false
+	}
+	return true
+}
 
-	var fields []gofakeit.Field
+// buildPools pre-generates entity pools at startup.
+func (mg *MessageGenerator) buildPools() (entityPool, error) {
+	pools := make(entityPool)
+	for _, e := range mg.Config.Entities {
+		objects := make([]map[string]any, e.Count)
+		for i := range objects {
+			obj, err := generateFieldMap(e.Fields)
+			if err != nil {
+				return nil, fmt.Errorf("building pool %q: %w", e.Name, err)
+			}
+			objects[i] = obj
+		}
+		pools[e.Name] = objects
+		mg.Logger.Info("Entity pool built", slog.String("entity", e.Name), slog.Int("count", e.Count))
+	}
+	return pools, nil
+}
+
+// generateMessage produces a single flat JSON message, merging entity fields as needed.
+func (mg *MessageGenerator) generateMessage(pools entityPool) (kafka.Message, error) {
+	obj := make(map[string]any)
 	for _, fc := range mg.Config.Fields {
-		params := gofakeit.NewMapParams()
-		for key, value := range fc.Params {
-			params.Add(key, value)
-		}
-		fields = append(fields, gofakeit.Field{
-			Name:     fc.Name,
-			Function: fc.Function,
-			Params:   *params,
-		})
-	}
-	mg.Logger.Debug("Fields generated")
-	return fields, nil
-}
+		switch {
+		case fc.Entity != "":
+			pool, ok := pools[fc.Entity]
+			if !ok || len(pool) == 0 {
+				return kafka.Message{}, fmt.Errorf("entity %q not found in pool", fc.Entity)
+			}
+			entity := pool[rand.Intn(len(pool))]
+			for k, v := range entity {
+				obj[k] = v
+			}
 
-// processBatch generates and sends a single batch of messages.
-func (mg *MessageGenerator) processBatch(fields []gofakeit.Field) error {
-	batch, err := mg.generateBatch(fields)
+		case fc.Function == "weighted" && len(fc.Values) > 0:
+			opts := make([]any, len(fc.Values))
+			weights := make([]float32, len(fc.Values))
+			for i, v := range fc.Values {
+				opts[i] = v.Value
+				weights[i] = v.Weight
+			}
+			result, err := gofakeit.Weighted(opts, weights)
+			if err != nil {
+				return kafka.Message{}, fmt.Errorf("weighted field %q: %w", fc.Name, err)
+			}
+			obj[fc.Name] = result
+
+		default:
+			val, err := callFaker(fc.Function, fc.Params)
+			if err != nil {
+				return kafka.Message{}, fmt.Errorf("field %q: %w", fc.Name, err)
+			}
+			obj[fc.Name] = val
+		}
+	}
+
+	value, err := json.Marshal(obj)
 	if err != nil {
-		return err
+		return kafka.Message{}, err
 	}
-
-	return mg.sendBatch(batch)
+	return kafka.Message{
+		Key:   []byte(strconv.Itoa(rand.Intn(100))),
+		Value: value,
+	}, nil
 }
 
-// generateBatch generates a batch of Kafka messages with random key-value pairs.
-func (mg *MessageGenerator) generateBatch(fields []gofakeit.Field) ([]kafka.Message, error) {
-	var batch []kafka.Message
+// generateBatch produces NumMsgs messages for the legacy batch mode.
+func (mg *MessageGenerator) generateBatch(pools entityPool) ([]kafka.Message, error) {
+	batch := make([]kafka.Message, 0, mg.Config.Topic.NumMsgs)
 	for i := 0; i < mg.Config.Topic.NumMsgs; i++ {
-		key := strconv.Itoa(rand.Intn(100))
-		value, err := gofakeit.JSON(&gofakeit.JSONOptions{
-			Type:   "object",
-			Fields: fields,
-			Indent: false,
-		})
+		msg, err := mg.generateMessage(pools)
 		if err != nil {
-			return nil, fmt.Errorf("error generating message: %v", err)
+			return nil, err
 		}
-
-		batch = append(batch, kafka.Message{
-			Key:   []byte(key),
-			Value: []byte(value),
-		})
+		batch = append(batch, msg)
 	}
 	mg.Logger.Info("Batch generated", slog.Int("messages in batch", len(batch)))
 	return batch, nil
 }
 
-// sendBatch sends a batch of Kafka messages to the specified topic.
+// generateFieldMap builds a flat map from a slice of Field configs (used for entity pools).
+func generateFieldMap(fields []config.Field) (map[string]any, error) {
+	obj := make(map[string]any)
+	for _, fc := range fields {
+		if fc.Function == "weighted" && len(fc.Values) > 0 {
+			opts := make([]any, len(fc.Values))
+			weights := make([]float32, len(fc.Values))
+			for i, v := range fc.Values {
+				opts[i] = v.Value
+				weights[i] = v.Weight
+			}
+			result, err := gofakeit.Weighted(opts, weights)
+			if err != nil {
+				return nil, fmt.Errorf("weighted field %q: %w", fc.Name, err)
+			}
+			obj[fc.Name] = result
+		} else {
+			val, err := callFaker(fc.Function, fc.Params)
+			if err != nil {
+				return nil, fmt.Errorf("field %q: %w", fc.Name, err)
+			}
+			obj[fc.Name] = val
+		}
+	}
+	return obj, nil
+}
+
+// callFaker invokes a gofakeit function by name with the given params.
+func callFaker(function string, params map[string]string) (any, error) {
+	info := gofakeit.GetFuncLookup(function)
+	if info == nil {
+		return nil, fmt.Errorf("unknown gofakeit function %q", function)
+	}
+	mp := gofakeit.NewMapParams()
+	for k, v := range params {
+		mp.Add(k, v)
+	}
+	return info.Generate(gofakeit.GlobalFaker, mp, info)
+}
+
+// sendBatch sends a batch of Kafka messages to the configured topic.
 func (mg *MessageGenerator) sendBatch(batch []kafka.Message) error {
 	transport := &kafka.Transport{
 		Dial: (&net.Dialer{
@@ -122,7 +241,6 @@ func (mg *MessageGenerator) sendBatch(batch []kafka.Message) error {
 	if err != nil {
 		return fmt.Errorf("failed to set up Kafka acks %s: %v", mg.Config.Kafka.Acks, err)
 	}
-
 	mg.Logger.Info("Acks configuration", slog.String("acks", acks.String()))
 
 	compressionType, err := mg.Config.Kafka.ParseCompression()
@@ -152,29 +270,24 @@ func (mg *MessageGenerator) sendBatch(batch []kafka.Message) error {
 
 // caCertPool initializes the CA certificate pool for TLS connections.
 func (mg *MessageGenerator) caCertPool() *tls.Config {
-	// Skip TLS configuration if not enabled.
 	if mg.Config.Kafka.TLS.CaPath == "" || mg.Config.Kafka.TLS.CertPath == "" || mg.Config.Kafka.TLS.KeyPath == "" {
 		mg.Logger.Debug("TLS not enabled")
 		return nil
 	}
-
 	mg.Logger.Debug("TLS enabled")
 
-	// Read CA, certificate, and key files.
 	caPEM, certPEM, keyPEM, err := mg.Config.Kafka.TLS.Read()
 	if err != nil {
 		fmt.Println(err)
 		return nil
 	}
 
-	// Define TLS configuration
 	certificate, err := tls.X509KeyPair(certPEM, keyPEM)
 	if err != nil {
 		log.Fatal("Failed to load client certificate", err)
 		return nil
 	}
 
-	// Create CA certificate pool
 	caCertPool := x509.NewCertPool()
 	if ok := caCertPool.AppendCertsFromPEM(caPEM); !ok {
 		log.Fatal("Failed to append CA certificate to pool")
@@ -187,15 +300,14 @@ func (mg *MessageGenerator) caCertPool() *tls.Config {
 	}
 }
 
-// handleBatchDelay introduces a delay between message batches if configured.
+// handleBatchDelay introduces a delay between batches in legacy batch mode.
 func (mg *MessageGenerator) handleBatchDelay(batchNum int) {
-	if mg.Config.Topic.BatchDelay > 0 {
-		time.Sleep(time.Duration(mg.Config.Topic.BatchDelay) * time.Millisecond)
-		mg.Logger.Info("Delaying before the next batch", slog.Int("milliseconds", mg.Config.Topic.BatchDelay))
+	delay := mg.Config.Topic.BatchDelay
+	if delay > 0 {
+		time.Sleep(time.Duration(delay) * time.Millisecond)
+		mg.Logger.Info("Delaying before the next batch", slog.Int("milliseconds", delay))
 	}
-
 	if mg.Config.Topic.NumBatch > 0 {
-		batchesLeft := mg.Config.Topic.NumBatch - batchNum
-		mg.Logger.Info("Batch progress", slog.Int("batches left", batchesLeft))
+		mg.Logger.Info("Batch progress", slog.Int("batches left", mg.Config.Topic.NumBatch-batchNum))
 	}
 }
