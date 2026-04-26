@@ -5,7 +5,7 @@ go 1.26
 require (
 	github.com/brianvoe/gofakeit/v7 v7.14.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/segmentio/kafka-go v0.4.50
+	github.com/segmentio/kafka-go v0.4.51
 )
 
 require (
