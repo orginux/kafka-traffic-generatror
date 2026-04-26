@@ -18,7 +18,7 @@ services:
       KTG_COMPRESSION: gzip
       KTG_MSGNUM: 5
       KTG_BATCHDELAY: 10000
-      KTG_BATCHNUM: 0
+      KTG_BATCHNUM: 1
       KTG_LOGLEVEL: debug
 
 networks:
